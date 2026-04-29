@@ -1,0 +1,81 @@
+import React, { useEffect, useState } from 'react';
+import { FiMapPin, FiPhone, FiMail } from 'react-icons/fi';
+import { settingsAPI } from '../services/api';
+import './Contact.css';
+
+const Contact = () => {
+  const [settings, setSettings] = useState(null);
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const { data } = await settingsAPI.getPublicSettings();
+        setSettings(data.data);
+      } catch (error) {
+        console.error('Failed to load contact settings', error);
+      }
+    };
+    loadSettings();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setFormData({ name: '', email: '', subject: '', message: '' });
+    setTimeout(() => setSubmitted(false), 5000);
+  };
+
+  const contact = settings?.contact;
+
+  return (
+    <div className="contact-page">
+      <div className="container">
+        <div className="contact-header" data-reveal>
+          <h1>Get In Touch</h1>
+          <p>We are here to craft custom floral stories for your moments.</p>
+        </div>
+
+        <div className="contact-container" data-reveal>
+          <aside className="contact-info">
+            <div className="info-card">
+              <h3>Blooms & Looms</h3>
+              <p>{contact?.studioName || 'Blooms & Looms'}</p>
+            </div>
+            <div className="info-card">
+              <h3><FiMapPin /> City</h3>
+              <p>{contact?.city || 'Kolhapur, Maharashtra'}</p>
+            </div>
+            <div className="info-card">
+              <h3><FiPhone /> Phone</h3>
+              <p>{contact?.phone || '+91 9632982631'}</p>
+            </div>
+            <div className="info-card">
+              <h3><FiMail /> Email</h3>
+              <p>{contact?.email || 'bloomsnlooms@gmail.com'}</p>
+            </div>
+          </aside>
+
+          <form onSubmit={handleSubmit} className="contact-form">
+            {submitted && <div className="alert alert-success">Thank you. We have received your message.</div>}
+            <div className="form-group"><label>Name *</label><input type="text" name="name" value={formData.name} onChange={handleInputChange} required /></div>
+            <div className="form-group"><label>Email *</label><input type="email" name="email" value={formData.email} onChange={handleInputChange} required /></div>
+            <div className="form-group"><label>Subject *</label><input type="text" name="subject" value={formData.subject} onChange={handleInputChange} required /></div>
+            <div className="form-group"><label>Message *</label><textarea name="message" value={formData.message} onChange={handleInputChange} rows="6" required /></div>
+            <div className="contact-btn-wrap">
+              <button type="submit" className="btn btn-primary contact-submit-btn">Send Message</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Contact;
