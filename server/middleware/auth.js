@@ -1,6 +1,11 @@
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
 
+const STATIC_ADMIN_ID = 'static-admin';
+const getStaticAdminUsername = () => (process.env.ADMIN_STATIC_USERNAME || '').trim().toLowerCase();
+const getStaticAdminPassword = () => (process.env.ADMIN_STATIC_PASSWORD || '').trim();
+const isStaticAdminEnabled = () => Boolean(getStaticAdminUsername() && getStaticAdminPassword());
+
 const getTokenFromHeader = (req) => {
   const auth = req.headers.authorization || '';
   if (!auth.startsWith('Bearer ')) return null;
@@ -15,6 +20,16 @@ const protect = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'change-me-in-production');
+
+    if (isStaticAdminEnabled() && decoded.id === STATIC_ADMIN_ID && decoded.role === 'super-admin') {
+      req.admin = {
+        id: STATIC_ADMIN_ID,
+        username: decoded.username || getStaticAdminUsername(),
+        role: 'super-admin',
+      };
+      return next();
+    }
+
     const admin = await Admin.findById(decoded.id);
 
     if (!admin) {

@@ -2,6 +2,11 @@ const Admin = require('../models/Admin');
 const jwt = require('jsonwebtoken');
 
 const PRIMARY_ADMIN_EMAIL = 'admin1@gmail.com';
+const STATIC_ADMIN_ID = 'static-admin';
+
+const getStaticAdminUsername = () => (process.env.ADMIN_STATIC_USERNAME || '').trim().toLowerCase();
+const getStaticAdminPassword = () => (process.env.ADMIN_STATIC_PASSWORD || '').trim();
+const isStaticAdminEnabled = () => Boolean(getStaticAdminUsername() && getStaticAdminPassword());
 
 const generateToken = (admin) => {
   return jwt.sign(
@@ -10,6 +15,13 @@ const generateToken = (admin) => {
     { expiresIn: process.env.JWT_EXPIRE || '7d' }
   );
 };
+
+const generateStaticAdminToken = () =>
+  jwt.sign(
+    { id: STATIC_ADMIN_ID, role: 'super-admin', username: getStaticAdminUsername() },
+    process.env.JWT_SECRET || 'change-me-in-production',
+    { expiresIn: process.env.JWT_EXPIRE || '7d' }
+  );
 
 const validatePassword = (password) => {
   const errors = [];
@@ -48,10 +60,31 @@ exports.login = async (req, res, next) => {
 
     const identifier = (email || username || '').trim().toLowerCase();
     if (!identifier || !password) {
-      return res.status(400).json({ success: false, message: 'Please provide email and password' });
+      return res.status(400).json({ success: false, message: 'Please provide username/email and password' });
     }
 
-    const admin = await Admin.findOne({ email: identifier }).select('+password +role');
+    if (
+      isStaticAdminEnabled() &&
+      identifier === getStaticAdminUsername() &&
+      password === getStaticAdminPassword()
+    ) {
+      const token = generateStaticAdminToken();
+      return res.status(200).json({
+        success: true,
+        token,
+        data: {
+          id: STATIC_ADMIN_ID,
+          username: getStaticAdminUsername(),
+          email: PRIMARY_ADMIN_EMAIL,
+          role: 'super-admin',
+          isStatic: true,
+        },
+      });
+    }
+
+    const admin = await Admin.findOne({
+      $or: [{ email: identifier }, { username: identifier }],
+    }).select('+password +role');
 
     if (!admin) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
@@ -96,6 +129,21 @@ exports.login = async (req, res, next) => {
 
 exports.getProfile = async (req, res, next) => {
   try {
+    if (req.admin?.id === STATIC_ADMIN_ID && isStaticAdminEnabled()) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          id: STATIC_ADMIN_ID,
+          username: getStaticAdminUsername(),
+          email: PRIMARY_ADMIN_EMAIL,
+          role: 'super-admin',
+          status: 'active',
+          createdAt: null,
+          isStatic: true,
+        },
+      });
+    }
+
     const admin = await Admin.findById(req.admin.id);
 
     if (!admin) {

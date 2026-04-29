@@ -10,9 +10,8 @@ const AdminLogin = () => {
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // ✅ FIXED: use username instead of email
   const [formData, setFormData] = useState({
-    username: 'admin',
+    username: '',
     password: ''
   });
 

@@ -27,11 +27,21 @@ const configuredOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL
   .map((origin) => origin.trim())
   .filter(Boolean);
 const allowedOrigins = [...new Set([...defaultOrigins, ...configuredOrigins])];
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+const isAllowedDevOrigin = (origin) => {
+  if (!isDevelopment || !origin) {
+    return false;
+  }
+
+  // Allow local/private network hosts during development for testing on LAN URLs.
+  return /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})(:\d+)?$/i.test(origin);
+};
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin) || isAllowedDevOrigin(origin)) {
         return callback(null, true);
       }
       return callback(new Error(`Not allowed by CORS: ${origin}`));

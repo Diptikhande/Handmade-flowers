@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -21,9 +21,15 @@ import ManageCustomOrders from './pages/ManageCustomOrders';
 
 import './styles/global.css';
 
-function App() {
+function RevealOnRouteChange() {
+  const location = useLocation();
+
   useEffect(() => {
-    const elements = document.querySelectorAll('[data-reveal]');
+    const elements = document.querySelectorAll('[data-reveal]:not(.is-visible)');
+    if (!elements.length) {
+      return undefined;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -37,11 +43,17 @@ function App() {
     );
 
     elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
 
+    return () => observer.disconnect();
+  }, [location.pathname]);
+
+  return null;
+}
+
+function App() {
   return (
     <Router>
+      <RevealOnRouteChange />
       <div className="app">
         <Header />
         <main className="main-content">

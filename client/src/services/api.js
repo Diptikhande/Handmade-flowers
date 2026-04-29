@@ -35,11 +35,14 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const hasAdminSession = !!localStorage.getItem('adminToken');
+    const isAdminPath = window.location.pathname.startsWith('/admin');
+
+    if (error.response?.status === 401 && hasAdminSession) {
       localStorage.removeItem('adminToken');
       localStorage.removeItem('adminUser');
-      if (window.location.pathname !== '/admin/login') {
-        window.location.href = '/admin/login';
+      if (isAdminPath && window.location.pathname !== '/admin/login') {
+        window.location.assign('/admin/login');
       }
     }
     return Promise.reject(error);
