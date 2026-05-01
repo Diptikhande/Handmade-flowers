@@ -1,0 +1,237 @@
+.login-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.login-modal-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-width: 420px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease-in-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.login-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.login-modal-close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.login-modal-tabs {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f9f9f9;
+}
+
+.login-modal-tabs .tab {
+  flex: 1;
+  padding: 16px 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.login-modal-tabs .tab:hover {
+  color: #333;
+  background: #f0f0f0;
+}
+
+.login-modal-tabs .tab.active {
+  color: #d4609c;
+  border-bottom-color: #d4609c;
+}
+
+.login-modal-form {
+  padding: 32px 24px;
+}
+
+.login-modal-form h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.login-modal-form .subtitle {
+  font-size: 14px;
+  color: #888;
+  margin: 0 0 24px 0;
+}
+
+.login-modal-message {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.login-modal-message.error {
+  background: #fee;
+  color: #c33;
+  border: 1px solid #fcc;
+}
+
+.login-modal-form .form-group {
+  margin-bottom: 16px;
+}
+
+.login-modal-form label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.login-modal-form input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.login-modal-form input:focus {
+  outline: none;
+  border-color: #d4609c;
+  box-shadow: 0 0 0 3px rgba(212, 96, 156, 0.1);
+}
+
+.login-modal-form input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.password-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-group input {
+  padding-right: 40px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: #333;
+}
+
+.login-modal-submit {
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #d4609c 0%, #c94d8d 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.login-modal-submit:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(212, 96, 156, 0.3);
+  transform: translateY(-1px);
+}
+
+.login-modal-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-modal-note {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 480px) {
+  .login-modal-container {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .login-modal-form {
+    padding: 24px 16px;
+  }
+
+  .login-modal-form h2 {
+    font-size: 20px;
+  }
+}
