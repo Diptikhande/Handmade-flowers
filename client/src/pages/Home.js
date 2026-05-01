@@ -81,8 +81,19 @@ const Home = () => {
         loginType="customer"
       />
 
-      {/* HERO */}
-      <section className="hero" data-reveal>
+      {/* 🔥 HERO WITH BACKGROUND SLIDER */}
+      <section className="hero">
+
+        {/* BACKGROUND SLIDES */}
+        <div className="hero-slider">
+          <div className="slide" style={{ backgroundImage: "url('/images/img6.jpg')" }}></div>
+          <div className="slide" style={{ backgroundImage: "url('/images/img8.jpg')" }}></div>
+          <div className="slide" style={{ backgroundImage: "url('/images/img3.jpg')" }}></div>
+          <div className="slide" style={{ backgroundImage: "url('/images/img4.jpg')" }}></div>
+          <div className="slide" style={{ backgroundImage: "url('/images/img5.jpg')" }}></div>
+        </div>
+
+        {/* OVERLAY */}
         <div className="hero-overlay">
           <div className="hero-content container">
             <h1>Blooms & Looms</h1>
@@ -94,10 +105,11 @@ const Home = () => {
             </div>
           </div>
         </div>
+
       </section>
 
       {/* CATEGORIES */}
-      <section className="section" data-reveal>
+      <section className="section">
         <div className="container">
           <h2 className="section-title">Shop by Category</h2>
           <p className="section-subtitle">Choose your favorite handmade collection</p>
@@ -115,7 +127,7 @@ const Home = () => {
       </section>
 
       {/* FEATURES */}
-      <section className="section soft" data-reveal>
+      <section className="section soft">
         <div className="container">
           <h2 className="section-title">Why Choose Us</h2>
           <p className="section-subtitle">Premium handmade products with love</p>
@@ -136,7 +148,7 @@ const Home = () => {
       </section>
 
       {/* BEST SELLERS */}
-      <section className="section" data-reveal>
+      <section className="section">
         <div className="container">
           <div className="section-header">
             <div>

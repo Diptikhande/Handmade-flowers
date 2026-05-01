@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { FiMenu, FiX, FiLogOut } from 'react-icons/fi';
 import './Header.css';
 
@@ -13,27 +13,62 @@ const Header = () => {
     window.location.href = '/admin/login';
   };
 
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <header className="header">
       <div className="container header-content">
-        <Link to="/" className="logo">Blooms & Looms</Link>
 
+        {/* 🔥 LOGO WITH IMAGE */}
+        <Link to="/" className="logo" onClick={closeMenu}>
+          <img 
+            src="/images/logo.jpeg"   /* 👈 YOUR JPEG IMAGE */
+            alt="logo" 
+            className="logo-img" 
+          />
+          <span>Blooms & Looms</span>
+        </Link>
+
+        {/* NAV */}
         <nav className={`nav ${menuOpen ? 'active' : ''}`}>
-          <Link to="/" className="nav-link">Home</Link>
-          <Link to="/products" className="nav-link">Shop</Link>
-          <Link to="/custom-order" className="nav-link">Custom</Link>
-          <Link to="/contact" className="nav-link">Contact</Link>
+
+          <NavLink to="/" onClick={closeMenu} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+            Home
+          </NavLink>
+
+          <NavLink to="/products" onClick={closeMenu} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+            Shop
+          </NavLink>
+
+          <NavLink to="/custom-order" onClick={closeMenu} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+            Custom
+          </NavLink>
+
+          <NavLink to="/contact" onClick={closeMenu} className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+            Contact
+          </NavLink>
+
           {isAdmin ? (
             <>
-              <Link to="/admin/dashboard" className="nav-link">Dashboard</Link>
-              <button className="btn btn-secondary btn-small" onClick={handleLogout}><FiLogOut /> Logout</button>
+              <NavLink to="/admin/dashboard" onClick={closeMenu} className="nav-link">
+                Dashboard
+              </NavLink>
+
+              <button className="btn btn-secondary btn-small" onClick={handleLogout}>
+                <FiLogOut /> Logout
+              </button>
             </>
           ) : (
             <Link to="/admin/login" className="btn btn-outline btn-small">Admin</Link>
           )}
+
         </nav>
 
-        <button className="mobile-menu-toggle" onClick={() => setMenuOpen((s) => !s)}>{menuOpen ? <FiX /> : <FiMenu />}</button>
+        {/* MOBILE BUTTON */}
+        <button className="mobile-menu-toggle" onClick={() => setMenuOpen((s) => !s)}>
+          {menuOpen ? <FiX /> : <FiMenu />}
+        </button>
+
       </div>
     </header>
   );
