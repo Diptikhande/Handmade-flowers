@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiFeather, FiGift, FiTruck, FiAward, FiArrowRight } from 'react-icons/fi';
+import { FiFeather, FiGift, FiTruck, FiAward } from 'react-icons/fi';
 import { productAPI } from '../services/api';
 import ProductCard from '../components/ProductCard';
 import UnifiedLoginModal from '../components/UnifiedLoginModal';
@@ -12,13 +12,6 @@ const features = [
   { icon: FiGift, title: 'Custom Orders', description: 'Personalized creations for every occasion.' },
   { icon: FiTruck, title: 'Fast Delivery', description: 'Quick and safe doorstep delivery.' },
   { icon: FiAward, title: 'Premium Quality', description: 'High-quality materials with elegant finish.' },
-];
-
-const categories = [
-  { key: 'bouquet', name: 'Bouquets', desc: 'Elegant floral bundles for celebrations.' },
-  { key: 'flower-pot', name: 'Flower Pots', desc: 'Beautiful handmade decor pieces.' },
-  { key: 'hair-clip', name: 'Hair Clips', desc: 'Cute floral accessories.' },
-  { key: 'keychain', name: 'Keychains', desc: 'Mini aesthetic floral charms.' },
 ];
 
 const Home = () => {
@@ -48,43 +41,29 @@ const Home = () => {
     setLoginModalOpen(true);
   };
 
-  const handleLoginSuccess = ({ type, data }) => {
+  const handleLoginSuccess = ({ type }) => {
     if (type === 'customer') {
-      // Handle customer login
-      if (loginAction === 'addToCart') {
-        // Add product to cart and show notification
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        cart.push(selectedProduct);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        alert(`${selectedProduct.name} added to cart!`);
-      } else if (loginAction === 'buyNow') {
-        // Redirect to product details page
+      if (loginAction === 'buyNow') {
         navigate(`/product/${selectedProduct._id}`);
       }
-    } else if (type === 'admin') {
-      // Redirect admin to dashboard
+    } else {
       navigate('/admin/dashboard');
     }
   };
 
   return (
     <div className="home">
-      {/* Login Modal */}
+
+      {/* LOGIN MODAL */}
       <UnifiedLoginModal
         isOpen={loginModalOpen}
-        onClose={() => {
-          setLoginModalOpen(false);
-          setSelectedProduct(null);
-          setLoginAction(null);
-        }}
+        onClose={() => setLoginModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
-        loginType="customer"
       />
 
-      {/* 🔥 HERO WITH BACKGROUND SLIDER */}
+      {/* 🔥 HERO SECTION */}
       <section className="hero">
 
-        {/* BACKGROUND SLIDES */}
         <div className="hero-slider">
           <div className="slide" style={{ backgroundImage: "url('/images/img6.jpg')" }}></div>
           <div className="slide" style={{ backgroundImage: "url('/images/img8.jpg')" }}></div>
@@ -93,7 +72,6 @@ const Home = () => {
           <div className="slide" style={{ backgroundImage: "url('/images/img5.jpg')" }}></div>
         </div>
 
-        {/* OVERLAY */}
         <div className="hero-overlay">
           <div className="hero-content container">
             <h1>Blooms & Looms</h1>
@@ -108,73 +86,125 @@ const Home = () => {
 
       </section>
 
-      {/* CATEGORIES */}
-      <section className="section">
+      {/* 🌸 CATEGORY SECTION (PREMIUM CLEAN) */}
+      <section className="section category-section">
         <div className="container">
           <h2 className="section-title">Shop by Category</h2>
-          <p className="section-subtitle">Choose your favorite handmade collection</p>
+          <p className="section-subtitle">Choose your favorite handmade collection </p>
+          <p className="section-subtitle"></p>
 
-          <div className="grid-4">
-            {categories.map((c) => (
-              <Link key={c.key} to={`/products?category=${c.key}`} className="card">
-                <h3>{c.name}</h3>
-                <p>{c.desc}</p>
-                <span className="link">Explore <FiArrowRight /></span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+          <div className="category-grid">
 
-      {/* FEATURES */}
-      <section className="section soft">
-        <div className="container">
-          <h2 className="section-title">Why Choose Us</h2>
-          <p className="section-subtitle">Premium handmade products with love</p>
+            {[
+              { key: 'bouquet', name: 'Bouquets', desc: 'Elegant floral bundles', img: '/images/img12.jpg' },
+              { key: 'flower-pot', name: 'Flower Pots', desc: 'Beautiful decor pieces', img: '/images/img13.jpg' },
+              { key: 'hair-clip', name: 'Hair Clips', desc: 'Cute floral accessories', img: '/images/img14.jpg' },
+              { key: 'keychain', name: 'Keychains', desc: 'Mini aesthetic charms', img: '/images/img15.jpg' },
+              { key: 'keychain', name: 'Keychains', desc: 'Mini aesthetic charms', img: '/images/img18.jpg' },              
+              { key: 'custom', name: 'Custom', desc: 'Made just for you', img: '/images/img5.jpg' }
+            ].map((item, index) => (
 
-          <div className="grid-4">
-            {features.map((f) => {
-              const Icon = f.icon;
-              return (
-                <div key={f.title} className="card center">
-                  <Icon className="icon" />
-                  <h3>{f.title}</h3>
-                  <p>{f.description}</p>
+              <Link 
+                key={index} 
+                to={`/products?category=${item.key}`} 
+                className="category-card-clean"
+              >
+
+                <div className="category-img-clean">
+                  <img src={item.img} alt={item.name} />
                 </div>
-              );
-            })}
+
+                <div className="category-content">
+                  <h3>{item.name}</h3>
+                  <p>{item.desc}</p>
+
+                  <span className="explore-btn">
+                    Explore →
+                  </span>
+                </div>
+
+              </Link>
+
+            ))}
+
           </div>
         </div>
       </section>
+
+      {/* WHY CHOOSE US */}
+<section className="section why-us">
+  <div className="container">
+
+    <h2 className="why-title">Why Choose Us </h2>
+
+    <div className="why-grid">
+      {features.map((f) => {
+        const Icon = f.icon;
+        return (
+          <div key={f.title} className="why-card">
+            <div className="why-icon">
+              <Icon />
+            </div>
+
+            <div className="why-text">
+              <h3>{f.title}</h3>
+              <p>{f.description}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+  </div>
+</section>
 
       {/* BEST SELLERS */}
-      <section className="section">
-        <div className="container">
-          <div className="section-header">
-            <div>
-              <h2 className="section-title">Best Sellers</h2>
-              <p className="section-subtitle">Most loved handmade creations</p>
+<section className="section best-sellers">
+  <div className="container">
+
+    <div className="section-header">
+      <div>
+        <h2 className="section-title">Best Sellers </h2>
+        <p className="section-subtitle">Most loved handmade creations</p>
+      </div>
+
+      <Link to="/products" className="btn btn-secondary">View All</Link>
+    </div>
+
+    {loading ? (
+      <LoadingSpinner message="Loading..." />
+    ) : (
+      <div className="product-grid">
+
+        {(featured.length > 0 ? featured : [
+          { name: "Pink Bouquet", price: 499, image: "/images/img1.jpg" },
+          { name: "Lavender Set", price: 399, image: "/images/img2.jpg" },
+          { name: "Sunflower Pot", price: 699, image: "/images/img17.jpg" },
+          { name: "Blue Floral", price: 459, image: "/images/img16.jpg" }
+        ]).map((p, i) => (
+
+          <div className="product-card" key={i}>
+
+            <div className="product-img">
+              <img src={p.image || p.images?.[0]} alt={p.name} />
             </div>
 
-            <Link to="/products" className="btn btn-secondary">View All</Link>
+            <div className="product-info">
+              <h3>{p.name}</h3>
+              <p className="price">₹{p.price}</p>
+
+              <button className="btn btn-primary small">
+                View Product →
+              </button>
+            </div>
+
           </div>
+        ))}
 
-          {loading ? (
-            <LoadingSpinner message="Loading..." />
-          ) : (
-            <div className="grid-3">
-              {featured.map((p) => (
-                <ProductCard
-                  key={p._id}
-                  product={p}
-                  onAddToCart={handleAddToCart}
-                  onBuyNow={handleBuyNow}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+      </div>
+    )}
+  </div>
+</section>
 
     </div>
   );

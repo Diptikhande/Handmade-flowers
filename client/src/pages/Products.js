@@ -23,6 +23,7 @@ const Products = () => {
     { value: 'hair-clip', label: 'Hair Clips' },
     { value: 'flower-pot', label: 'Flower Pots' },
     { value: 'bouquet', label: 'Bouquets' },
+    { value: 'bookmark', label: 'Bookmark' },
   ];
 
   useEffect(() => {
