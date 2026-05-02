@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FiBox, FiShoppingCart, FiClock, FiCheck, FiTrendingUp, FiEdit3 } from 'react-icons/fi';
 import { orderAPI, customOrderAPI, productAPI } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import './AdminDashboard.css';
@@ -44,7 +45,7 @@ const AdminDashboard = () => {
         {/* Stats Cards */}
         <div className="stats-grid">
           <div className="stat-card">
-            <div className="stat-icon">📦</div>
+            <div className="stat-icon"><FiBox /></div>
             <div className="stat-content">
               <h3>Total Products</h3>
               <p className="stat-value">{stats?.totalProducts || 0}</p>
@@ -55,7 +56,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon">📋</div>
+            <div className="stat-icon"><FiShoppingCart /></div>
             <div className="stat-content">
               <h3>Total Orders</h3>
               <p className="stat-value">{stats?.orders?.totalOrders || 0}</p>
@@ -66,7 +67,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon">⏳</div>
+            <div className="stat-icon"><FiClock /></div>
             <div className="stat-content">
               <h3>Pending Orders</h3>
               <p className="stat-value">{stats?.orders?.pendingOrders || 0}</p>
@@ -77,7 +78,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon">✓</div>
+            <div className="stat-icon"><FiCheck /></div>
             <div className="stat-content">
               <h3>Approved Orders</h3>
               <p className="stat-value">{stats?.orders?.approvedOrders || 0}</p>
@@ -88,7 +89,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon">💰</div>
+            <div className="stat-icon"><FiTrendingUp /></div>
             <div className="stat-content">
               <h3>Total Revenue</h3>
               <p className="stat-value">₹{stats?.orders?.totalRevenue || 0}</p>
@@ -99,7 +100,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon">🎨</div>
+            <div className="stat-icon"><FiEdit3 /></div>
             <div className="stat-content">
               <h3>Custom Orders</h3>
               <p className="stat-value">{stats?.totalCustomOrders || 0}</p>
@@ -115,15 +116,15 @@ const AdminDashboard = () => {
           <h2>Quick Actions</h2>
           <div className="actions-grid">
             <Link to="/admin/products" className="action-button">
-              <span>📦</span>
+              <FiBox />
               <span>Manage Products</span>
             </Link>
             <Link to="/admin/orders" className="action-button">
-              <span>📋</span>
+              <FiShoppingCart />
               <span>Verify Orders</span>
             </Link>
             <Link to="/admin/custom-orders" className="action-button">
-              <span>🎨</span>
+              <FiEdit3 />
               <span>Custom Orders</span>
             </Link>
           </div>
@@ -133,10 +134,10 @@ const AdminDashboard = () => {
         <div className="info-box">
           <h3>Welcome to Admin Panel</h3>
           <ul>
-            <li>✓ Add, edit, or delete products</li>
-            <li>✓ Verify and approve customer orders</li>
-            <li>✓ Manage custom order requests</li>
-            <li>✓ View revenue and order statistics</li>
+            <li>Add, edit, or delete products</li>
+            <li>Verify and approve customer orders</li>
+            <li>Manage custom order requests</li>
+            <li>View revenue and order statistics</li>
           </ul>
         </div>
       </div>

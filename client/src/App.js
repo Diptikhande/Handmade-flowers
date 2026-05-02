@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Header from './components/Header';
+import AdminHeader from './components/AdminHeader';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -12,6 +13,7 @@ import CustomOrder from './pages/CustomOrder';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import OrderStatus from './pages/OrderStatus';
+import Profile from './pages/Profile';
 
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
@@ -50,33 +52,45 @@ function RevealOnRouteChange() {
   return null;
 }
 
+function AppContent() {
+  const location = useLocation();
+  const isAdminPath = location.pathname.startsWith('/admin');
+
+  return (
+    <>
+      {isAdminPath ? <AdminHeader /> : <Header />}
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/custom-order" element={<CustomOrder />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/order-status" element={<OrderStatus />} />
+          <Route path="/profile" element={<Profile />} />
+
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/products" element={<ProtectedRoute><ManageProducts /></ProtectedRoute>} />
+          <Route path="/admin/orders" element={<ProtectedRoute><ManageOrders /></ProtectedRoute>} />
+          <Route path="/admin/custom-orders" element={<ProtectedRoute><ManageCustomOrders /></ProtectedRoute>} />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+      {!isAdminPath && <Footer />}
+    </>
+  );
+}
+
 function App() {
   return (
     <Router>
       <RevealOnRouteChange />
       <div className="app">
-        <Header />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/product/:id" element={<ProductDetails />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/custom-order" element={<CustomOrder />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/order-status" element={<OrderStatus />} />
-
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/admin/products" element={<ProtectedRoute><ManageProducts /></ProtectedRoute>} />
-            <Route path="/admin/orders" element={<ProtectedRoute><ManageOrders /></ProtectedRoute>} />
-            <Route path="/admin/custom-orders" element={<ProtectedRoute><ManageCustomOrders /></ProtectedRoute>} />
-
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-        <Footer />
+        <AppContent />
       </div>
     </Router>
   );

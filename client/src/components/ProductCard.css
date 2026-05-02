@@ -16,11 +16,14 @@
 }
 
 .product-image {
-  height: 160px;
+  height: 240px;
   overflow: hidden;
   background: linear-gradient(180deg, #fff8fa, #fceef2);
   border-radius: 14px;
   margin: 0.8rem 0.8rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .product-image img {

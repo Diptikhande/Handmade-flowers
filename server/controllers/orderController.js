@@ -109,10 +109,15 @@ exports.getOrderStats = async (_req, res, next) => {
     const approvedOrders = await Order.countDocuments({ status: 'approved' });
     const rejectedOrders = await Order.countDocuments({ status: 'rejected' });
 
-    const totalRevenue = await Order.aggregate([
+    const totalRevenueData = await Order.aggregate([
       { $match: { status: 'approved' } },
-      { $group: { _id: null, total: { $sum: '$amount' } } },
+      { $group: { 
+        _id: null, 
+        total: { $sum: { $toDouble: '$amount' } } 
+      } },
     ]);
+
+    const totalRevenue = totalRevenueData[0]?.total || 0;
 
     res.status(200).json({
       success: true,
@@ -121,7 +126,7 @@ exports.getOrderStats = async (_req, res, next) => {
         pendingOrders,
         approvedOrders,
         rejectedOrders,
-        totalRevenue: totalRevenue[0]?.total || 0,
+        totalRevenue: Math.round(totalRevenue * 100) / 100, // Round to 2 decimals
       },
     });
   } catch (error) {

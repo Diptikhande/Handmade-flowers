@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FiMenu, FiX, FiLogOut } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom';
+import { FiMenu, FiX, FiLogOut, FiUser, FiShoppingCart } from 'react-icons/fi';
 import './Header.css';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const isAdmin = !!localStorage.getItem('adminToken');
+  const navigate = useNavigate();
+  const isCustomer = !!localStorage.getItem('customerToken');
+  const customerUser = localStorage.getItem('customerUser') ? JSON.parse(localStorage.getItem('customerUser')) : null;
 
   const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminUser');
-    window.location.href = '/admin/login';
+    localStorage.removeItem('customerToken');
+    localStorage.removeItem('customerUser');
+    localStorage.removeItem('cart');
+    navigate('/');
   };
 
   return (
@@ -23,17 +26,21 @@ const Header = () => {
           <Link to="/products" className="nav-link">Shop</Link>
           <Link to="/custom-order" className="nav-link">Custom</Link>
           <Link to="/contact" className="nav-link">Contact</Link>
-          {isAdmin ? (
+          {isCustomer ? (
             <>
-              <Link to="/admin/dashboard" className="nav-link">Dashboard</Link>
-              <button className="btn btn-secondary btn-small" onClick={handleLogout}><FiLogOut /> Logout</button>
+              <Link to="/profile" className="nav-link"><FiUser /> Profile</Link>
+              <button className="btn btn-secondary btn-small" onClick={handleLogout}>
+                <FiLogOut /> Logout
+              </button>
             </>
           ) : (
             <Link to="/admin/login" className="btn btn-outline btn-small">Admin</Link>
           )}
         </nav>
 
-        <button className="mobile-menu-toggle" onClick={() => setMenuOpen((s) => !s)}>{menuOpen ? <FiX /> : <FiMenu />}</button>
+        <button className="mobile-menu-toggle" onClick={() => setMenuOpen((s) => !s)}>
+          {menuOpen ? <FiX /> : <FiMenu />}
+        </button>
       </div>
     </header>
   );

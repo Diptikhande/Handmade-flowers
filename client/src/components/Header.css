@@ -17,9 +17,19 @@
 
 .logo {
   font-family: 'Playfair Display', serif;
-  font-size: 1.56rem;
-  letter-spacing: 0.3px;
-  color: var(--text);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
 }
 
 .nav { display: flex; align-items: center; gap: 1rem; }

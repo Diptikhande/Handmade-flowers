@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { FiArrowLeft } from 'react-icons/fi';
 import { orderAPI, settingsAPI } from '../services/api';
 import './Checkout.css';
 
@@ -62,6 +63,9 @@ const Checkout = () => {
   return (
     <div className="checkout-page">
       <div className="container">
+        <button className="back-button" onClick={() => navigate(-1)}>
+          <FiArrowLeft /> Back
+        </button>
         <h1>Secure Checkout</h1>
         <div className="checkout-container">
           <aside className="summary-card">

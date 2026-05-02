@@ -19,6 +19,8 @@ const categories = [
   { key: 'flower-pot', name: 'Flower Pots', desc: 'Beautiful handmade decor pieces.' },
   { key: 'hair-clip', name: 'Hair Clips', desc: 'Cute floral accessories.' },
   { key: 'keychain', name: 'Keychains', desc: 'Mini aesthetic floral charms.' },
+  { key: 'fridge-magnet', name: 'Fridge Magnets', desc: 'Colorful flower magnets for your kitchen.' },
+  { key: 'wall-hanging', name: 'Wall Hangings', desc: 'Beautiful home decor pieces.' },
 ];
 
 const Home = () => {
@@ -132,35 +134,6 @@ const Home = () => {
               );
             })}
           </div>
-        </div>
-      </section>
-
-      {/* BEST SELLERS */}
-      <section className="section" data-reveal>
-        <div className="container">
-          <div className="section-header">
-            <div>
-              <h2 className="section-title">Best Sellers</h2>
-              <p className="section-subtitle">Most loved handmade creations</p>
-            </div>
-
-            <Link to="/products" className="btn btn-secondary">View All</Link>
-          </div>
-
-          {loading ? (
-            <LoadingSpinner message="Loading..." />
-          ) : (
-            <div className="grid-3">
-              {featured.map((p) => (
-                <ProductCard
-                  key={p._id}
-                  product={p}
-                  onAddToCart={handleAddToCart}
-                  onBuyNow={handleBuyNow}
-                />
-              ))}
-            </div>
-          )}
         </div>
       </section>
 

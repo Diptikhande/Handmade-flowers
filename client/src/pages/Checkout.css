@@ -1,4 +1,23 @@
 .checkout-page { padding: 2rem 0; }
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: var(--spacing-lg);
+  transition: color 0.2s;
+}
+
+.back-button:hover {
+  color: var(--primary-dark);
+}
+
 .checkout-page h1 { text-align: center; margin-bottom: 1.3rem; }
 .checkout-container { display: grid; grid-template-columns: 340px 1fr; gap: 1.2rem; }
 .summary-card, .payment-form-container {
