@@ -24,41 +24,40 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
-const defaultOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001', 'http://127.0.0.1:3001'];
-const configuredOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || '')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-const allowedOrigins = [...new Set([...defaultOrigins, ...configuredOrigins])];
-const isDevelopment = process.env.NODE_ENV !== 'production';
+/* =========================
+   CORS CONFIGURATION
+========================= */
 
-const isAllowedDevOrigin = (origin) => {
-  if (!isDevelopment || !origin) {
-    return false;
-  }
-
-  // Allow local/private network hosts during development for testing on LAN URLs.
-  return /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})(:\d+)?$/i.test(origin);
-};
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'https://handmade-flowers.vercel.app'
+];
 
 app.use(
   cors({
-    origin: function(origin, callback) {
-      // Allow all origins in development
-      if (process.env.NODE_ENV === 'development') {
+    origin: function (origin, callback) {
+
+      // Allow requests without origin
+      if (!origin) {
         return callback(null, true);
       }
-      // In production, use the configured origins
-      if (!origin || allowedOrigins.includes(origin) || isAllowedDevOrigin(origin)) {
+
+      // Allow frontend URLs
+      if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(new Error(`Not allowed by CORS: ${origin}`));
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
     },
     credentials: true,
   })
 );
 
-// Add explicit CORS headers for static file serving
+/* =========================
+   STATIC FILES
+========================= */
+
 app.use('/uploads', (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -67,17 +66,31 @@ app.use('/uploads', (req, res, next) => {
 });
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+/* =========================
+   BODY PARSER
+========================= */
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
+/* =========================
+   HEALTH ROUTE
+========================= */
+
 app.get('/api/health', (_req, res) => {
   const dbConnected = mongoose.connection.readyState === 1;
+
   res.status(200).json({
     success: true,
     server: 'running',
     database: dbConnected ? 'connected' : 'disconnected',
   });
 });
+
+/* =========================
+   API ROUTES
+========================= */
 
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
@@ -88,11 +101,22 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/settings', siteSettingsRoutes);
 
+/* =========================
+   ERROR HANDLER
+========================= */
+
 app.use(errorHandler);
 
 app.use((_req, res) => {
-  res.status(404).json({ success: false, message: 'Route not found' });
+  res.status(404).json({
+    success: false,
+    message: 'Route not found'
+  });
 });
+
+/* =========================
+   SERVER START
+========================= */
 
 const PORT = process.env.PORT || 5000;
 
@@ -104,6 +128,7 @@ const startServer = async () => {
       console.log(`Server running on http://localhost:${PORT}`);
       console.log(`Allowed CORS origins: ${allowedOrigins.join(', ')}`);
     });
+
   } catch (error) {
     console.error(`Failed to start server: ${error.message}`);
     process.exit(1);
