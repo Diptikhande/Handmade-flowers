@@ -25,34 +25,15 @@ const errorHandler = require('./middleware/errorHandler');
 const app = express();
 
 /* =========================
-   CORS CONFIGURATION
+   CORS
 ========================= */
 
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-  'https://handmade-flowers.vercel.app'
-];
+app.use(cors({
+  origin: 'https://handmade-flowers.vercel.app',
+  credentials: true,
+}));
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-
-      // Allow requests without origin
-      if (!origin) {
-        return callback(null, true);
-      }
-
-      // Allow frontend URLs
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
-    },
-    credentials: true,
-  })
-);
+app.options('*', cors());
 
 /* =========================
    STATIC FILES
@@ -75,7 +56,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 /* =========================
-   HEALTH ROUTE
+   HEALTH CHECK
 ========================= */
 
 app.get('/api/health', (_req, res) => {
@@ -110,12 +91,12 @@ app.use(errorHandler);
 app.use((_req, res) => {
   res.status(404).json({
     success: false,
-    message: 'Route not found'
+    message: 'Route not found',
   });
 });
 
 /* =========================
-   SERVER START
+   SERVER
 ========================= */
 
 const PORT = process.env.PORT || 5000;
@@ -126,7 +107,6 @@ const startServer = async () => {
 
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
-      console.log(`Allowed CORS origins: ${allowedOrigins.join(', ')}`);
     });
 
   } catch (error) {
