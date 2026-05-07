@@ -9,10 +9,17 @@ const ManageOrders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     fetchOrders();
   }, []);
+
+  useEffect(() => {
+    setShowAll(false);
+    setSelectedOrder(null);
+    setRejectReason('');
+  }, [statusFilter]);
 
   const fetchOrders = async () => {
     try {
@@ -109,6 +116,8 @@ const ManageOrders = () => {
   };
 
   const filteredOrders = statusFilter === 'all' ? orders : orders.filter(o => o.status === statusFilter);
+  const hasMoreOrders = filteredOrders.length > 4;
+  const visibleOrders = showAll ? filteredOrders : filteredOrders.slice(0, 4);
 
   return (
     <div className="manage-orders-page">
@@ -261,7 +270,7 @@ const ManageOrders = () => {
                       <td colSpan="8" className="empty-message">No orders found</td>
                     </tr>
                   ) : (
-                    filteredOrders.map((order) => (
+                    visibleOrders.map((order) => (
                       <tr key={order._id}>
                         <td>
                           <code>{order.transactionId?.slice(0, 12)}...</code>
@@ -307,6 +316,18 @@ const ManageOrders = () => {
                   )}
                 </tbody>
               </table>
+
+              {hasMoreOrders && (
+                <div className="orders-view-more">
+                  <button
+                    type="button"
+                    className="btn btn-outline"
+                    onClick={() => setShowAll((v) => !v)}
+                  >
+                    {showAll ? 'Show Less' : `View All (${filteredOrders.length})`}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

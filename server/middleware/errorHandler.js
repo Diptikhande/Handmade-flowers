@@ -2,6 +2,14 @@
 const errorHandler = (err, req, res, next) => {
   console.error(`✗ Error:`, err);
 
+  // Multer errors (file uploads)
+  if (err && err.name === 'MulterError') {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ message: 'Image is too large. Max size is 5MB.' });
+    }
+    return res.status(400).json({ message: err.message || 'File upload error' });
+  }
+
   // Mongoose Validation Error
   if (err.name === 'ValidationError') {
     const messages = Object.values(err.errors).map((error) => error.message);
@@ -29,7 +37,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // File Upload Error
-  if (err.message && err.message.includes('Only image files')) {
+  if (err.message && (err.message.includes('Only image') || err.message.includes('Only JPG'))) {
     return res.status(400).json({ message: err.message });
   }
 

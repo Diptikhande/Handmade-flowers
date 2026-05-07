@@ -8,6 +8,7 @@ const ManageCustomOrders = () => {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showAll, setShowAll] = useState(false);
 
   const fetchOrders = async () => {
     try {
@@ -24,10 +25,17 @@ const ManageCustomOrders = () => {
     fetchOrders();
   }, []);
 
-  const handleStatusUpdate = async (id, status) => {
+  useEffect(() => {
+    setShowAll(false);
+    setSelectedOrder(null);
+  }, [statusFilter]);
+
+  const handleStatusUpdate = async (id, status, rejectionReasonOverride) => {
     if (!status) return;
 
-    const reason = status === 'rejected' ? prompt('Please provide a reason for rejection:') : null;
+    const reason = status === 'rejected'
+      ? (rejectionReasonOverride || prompt('Please provide a reason for rejection:'))
+      : null;
     if (status === 'rejected' && !reason) return;
 
     try {
@@ -45,17 +53,20 @@ const ManageCustomOrders = () => {
     if (!reason) return;
 
     if (window.confirm('Remove this order?')) {
-      handleStatusUpdate(id, 'rejected');
+      handleStatusUpdate(id, 'rejected', reason);
     }
   };
 
   const filteredOrders = statusFilter === 'all' ? orders : orders.filter(o => o.status === statusFilter);
+  const hasMoreOrders = filteredOrders.length > 4;
+  const visibleOrders = showAll ? filteredOrders : filteredOrders.slice(0, 4);
 
   const getStatusColor = (status) => {
     const colors = {
       pending: '#f39c12',
       approved: '#27ae60',
       rejected: '#e74c3c',
+      'in-progress': '#2980b9',
     };
     return colors[status] || '#95a5a6';
   };
@@ -101,7 +112,7 @@ const ManageCustomOrders = () => {
                     <td colSpan="8" className="empty-message">No custom orders found</td>
                   </tr>
                 ) : (
-                  filteredOrders.map((order) => (
+                  visibleOrders.map((order) => (
                     <tr key={order._id}>
                       <td>{order.name}</td>
                       <td>{order.phone}</td>
@@ -145,6 +156,18 @@ const ManageCustomOrders = () => {
               </tbody>
             </table>
           </div>
+
+          {hasMoreOrders && (
+            <div className="orders-view-more">
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={() => setShowAll((v) => !v)}
+              >
+                {showAll ? 'Show Less' : `View All (${filteredOrders.length})`}
+              </button>
+            </div>
+          )}
 
           {/* Order Details Panel */}
           {selectedOrder && (

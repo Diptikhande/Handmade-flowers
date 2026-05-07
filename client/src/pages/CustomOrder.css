@@ -1,16 +1,19 @@
 .custom-order-page {
-  padding: 80px 0;
-  min-height: 100vh;
+  padding: 64px 0;
   background:
     radial-gradient(circle at 10% 10%, rgba(253, 236, 239, 0.7), transparent 40%),
     radial-gradient(circle at 90% 0%, rgba(247, 198, 207, 0.35), transparent 45%),
     var(--background);
 }
 
+.custom-order-page .container {
+  width: min(1280px, 97%);
+}
+
 /* HEADER */
 .custom-order-header {
   text-align: center;
-  margin-bottom: 2.2rem;
+  margin-bottom: 1.6rem;
 }
 
 .custom-order-header h1 {
@@ -27,7 +30,7 @@
 /* MAIN LAYOUT */
 .custom-order-wrapper {
   display: grid;
-  grid-template-columns: 1fr 1.3fr;
+  grid-template-columns: 1fr 1.2fr;
   gap: 1.5rem;
   align-items: start;
 }
@@ -39,33 +42,33 @@
   gap: 1rem;
 }
 
-.info-card {
+.custom-order-page .info-card {
   background: linear-gradient(180deg, #fff, #fff7fa);
   border: 1px solid #f0d9e1;
   border-radius: 18px;
-  padding: 1.2rem;
+  padding: 1.05rem;
   box-shadow: 0 14px 35px rgba(113, 79, 92, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.info-card:hover {
+.custom-order-page .info-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 20px 45px rgba(113, 79, 92, 0.15);
 }
 
-.info-card h3 {
+.custom-order-page .info-card h3 {
   margin-bottom: 0.7rem;
   color: #4d2e39;
   font-size: 1.05rem;
 }
 
-.info-card ol,
-.info-card ul {
+.custom-order-page .info-card ol,
+.custom-order-page .info-card ul {
   margin: 0;
   padding-left: 1.2rem;
 }
 
-.info-card li {
+.custom-order-page .info-card li {
   margin-bottom: 0.5rem;
   color: #6f5a63;
   font-size: 0.95rem;
@@ -76,16 +79,16 @@
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid #f2dce3;
   border-radius: 20px;
-  padding: 1.8rem;
+  padding: 1.35rem;
   box-shadow: 0 22px 55px rgba(112, 80, 92, 0.12);
 }
 
 /* FORM GROUP */
-.form-group {
-  margin-bottom: 1.1rem;
+.custom-order-form .form-group {
+  margin-bottom: 0.9rem;
 }
 
-.form-group label {
+.custom-order-form .form-group label {
   display: block;
   margin-bottom: 0.4rem;
   font-weight: 500;
@@ -93,33 +96,33 @@
 }
 
 /* INPUTS */
-.form-group input,
-.form-group textarea,
-.form-group select {
+.custom-order-form .form-group input,
+.custom-order-form .form-group textarea,
+.custom-order-form .form-group select {
   width: 100%;
-  padding: 0.75rem 0.85rem;
+  padding: 0.65rem 0.8rem;
   border: 1px solid #e5d6dc;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #fff;
   outline: none;
   transition: 0.3s ease;
 }
 
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
+.custom-order-form .form-group input:focus,
+.custom-order-form .form-group textarea:focus,
+.custom-order-form .form-group select:focus {
   border-color: #c3ceef;
   box-shadow: 0 0 0 3px rgba(195, 206, 239, 0.35);
 }
 
 /* TEXTAREA */
-.form-group textarea {
+.custom-order-form .form-group textarea {
   resize: vertical;
-  min-height: 120px;
+  min-height: 88px;
 }
 
 /* SMALL TEXT */
-.form-group small {
+.custom-order-form .form-group small {
   display: block;
   margin-top: 0.35rem;
   color: #8a6b73;
@@ -127,12 +130,12 @@
 }
 
 /* BUTTON */
-.btn-large {
+.custom-order-form .btn-large {
   width: 100%;
-  padding: 0.85rem;
+  padding: 0.8rem;
   border-radius: 999px;
   font-size: 1rem;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 /* NOTE */
@@ -143,8 +146,15 @@
   color: #735e66;
 }
 
+.custom-order-form .form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  align-items: end;
+}
+
 /* ALERTS */
-.alert {
+.custom-order-form .alert {
   padding: 0.75rem;
   border-radius: 10px;
   margin-bottom: 1rem;
@@ -152,13 +162,13 @@
   font-size: 0.9rem;
 }
 
-.alert-success {
+.custom-order-form .alert-success {
   background: #eaf7ee;
   border: 1px solid #bde5c8;
   color: #2f6b3f;
 }
 
-.alert-danger {
+.custom-order-form .alert-danger {
   background: #ffe9ec;
   border: 1px solid #ffb3bd;
   color: #8a2c3a;
@@ -167,6 +177,21 @@
 /* RESPONSIVE */
 @media (max-width: 900px) {
   .custom-order-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .custom-order-info {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .custom-order-info {
+    grid-template-columns: 1fr;
+  }
+
+  .custom-order-form .form-row {
     grid-template-columns: 1fr;
   }
 }

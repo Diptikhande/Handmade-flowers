@@ -75,7 +75,11 @@ const ManageProducts = () => {
       await fetchProducts();
       resetForm();
     } catch (error) {
-      alert(error.response?.data?.message || 'Failed to save product');
+      const apiMessage =
+        error.response?.data?.message ||
+        error.response?.data?.errors?.[0] ||
+        error.message;
+      alert(apiMessage || 'Failed to save product');
     }
   };
 
@@ -184,7 +188,7 @@ const ManageProducts = () => {
                       />
                     ) : null}
                     <div className="image-placeholder" style={{ display: product.imageUrl ? 'none' : 'flex' }}>
-                      <span>📷</span>
+                      <span aria-hidden="true">📷</span>
                       <p>No Image</p>
                     </div>
                   </div>

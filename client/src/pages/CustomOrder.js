@@ -98,33 +98,35 @@ const CustomOrder = () => {
               </div>
             )}
 
-            {/* Name */}
-            <div className="form-group">
-              <label>Your Name *</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="John Doe"
-                required
-                disabled={loading}
-              />
-            </div>
+            <div className="form-row">
+              {/* Name */}
+              <div className="form-group">
+                <label>Your Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="John Doe"
+                  required
+                  disabled={loading}
+                />
+              </div>
 
-            {/* Phone */}
-            <div className="form-group">
-              <label>Phone Number (10 digits) *</label>
-              <input
-                type="tel"
-                name="phone"
-                pattern="[0-9]{10}"
-                value={formData.phone}
-                onChange={handleInputChange}
-                placeholder="9876543210"
-                required
-                disabled={loading}
-              />
+              {/* Phone */}
+              <div className="form-group">
+                <label>Phone (10 digits) *</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  pattern="[0-9]{10}"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="9876543210"
+                  required
+                  disabled={loading}
+                />
+              </div>
             </div>
 
             {/* Address */}
@@ -135,42 +137,48 @@ const CustomOrder = () => {
                 value={formData.address}
                 onChange={handleInputChange}
                 placeholder="Your complete address"
+                rows={3}
                 required
                 disabled={loading}
               ></textarea>
             </div>
 
-            {/* Product Type */}
-            <div className="form-group">
-              <label>Product Type *</label>
-              <select
-                name="productType"
-                value={formData.productType}
-                onChange={handleInputChange}
-                required
-                disabled={loading}
-              >
-                <option value="">Select Product Type</option>
-                {productTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type.replace('-', ' ')}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <div className="form-row">
+              {/* Product Type */}
+              <div className="form-group">
+                <label>Product Type *</label>
+                <select
+                  name="productType"
+                  value={formData.productType}
+                  onChange={handleInputChange}
+                  required
+                  disabled={loading}
+                >
+                  <option value="">Select Type</option>
+                  {productTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type.replace('-', ' ')}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            {/* Color */}
-            <div className="form-group">
-              <label>Color Preference *</label>
-              <input
-                type="text"
-                name="color"
-                value={formData.color}
-                onChange={handleInputChange}
-                placeholder="e.g., Red, Pink, Blue, Rainbow, etc."
-                required
-                disabled={loading}
-              />
+              {/* Occasion */}
+              <div className="form-group">
+                <label>Occasion</label>
+                <select
+                  name="occasion"
+                  value={formData.occasion}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                >
+                  {occasions.map((occ) => (
+                    <option key={occ} value={occ}>
+                      {occ.charAt(0).toUpperCase() + occ.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Custom Text */}
@@ -188,35 +196,34 @@ const CustomOrder = () => {
               <small>{formData.customText.length}/100 characters</small>
             </div>
 
-            {/* Quantity */}
-            <div className="form-group">
-              <label>Quantity *</label>
-              <input
-                type="number"
-                name="quantity"
-                value={formData.quantity}
-                onChange={handleInputChange}
-                min="1"
-                required
-                disabled={loading}
-              />
-            </div>
+            <div className="form-row">
+              {/* Color */}
+              <div className="form-group">
+                <label>Color Preference *</label>
+                <input
+                  type="text"
+                  name="color"
+                  value={formData.color}
+                  onChange={handleInputChange}
+                  placeholder="Red, Pink, Blue…"
+                  required
+                  disabled={loading}
+                />
+              </div>
 
-            {/* Occasion */}
-            <div className="form-group">
-              <label>Occasion</label>
-              <select
-                name="occasion"
-                value={formData.occasion}
-                onChange={handleInputChange}
-                disabled={loading}
-              >
-                {occasions.map((occ) => (
-                  <option key={occ} value={occ}>
-                    {occ.charAt(0).toUpperCase() + occ.slice(1)}
-                  </option>
-                ))}
-              </select>
+              {/* Quantity */}
+              <div className="form-group">
+                <label>Quantity *</label>
+                <input
+                  type="number"
+                  name="quantity"
+                  value={formData.quantity}
+                  onChange={handleInputChange}
+                  min="1"
+                  required
+                  disabled={loading}
+                />
+              </div>
             </div>
 
             {/* Submit Button */}

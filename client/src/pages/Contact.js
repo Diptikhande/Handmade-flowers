@@ -77,11 +77,26 @@ const Contact = () => {
 
           <form onSubmit={handleSubmit} className="contact-form">
             {submitted && <div className="alert alert-success">Thank you. We have received your message and will get back to you soon!</div>}
-            {error && <div className="alert alert-error">{error}</div>}
-            <div className="form-group"><label>Name *</label><input type="text" name="name" value={formData.name} onChange={handleInputChange} required /></div>
-            <div className="form-group"><label>Email *</label><input type="email" name="email" value={formData.email} onChange={handleInputChange} required /></div>
-            <div className="form-group"><label>Subject *</label><input type="text" name="subject" value={formData.subject} onChange={handleInputChange} required /></div>
-            <div className="form-group"><label>Message *</label><textarea name="message" value={formData.message} onChange={handleInputChange} rows="6" required /></div>
+            {error && <div className="alert alert-danger">{error}</div>}
+
+            <div className="contact-form-grid">
+              <div className="form-group">
+                <label>Name *</label>
+                <input type="text" name="name" value={formData.name} onChange={handleInputChange} required />
+              </div>
+              <div className="form-group">
+                <label>Email *</label>
+                <input type="email" name="email" value={formData.email} onChange={handleInputChange} required />
+              </div>
+              <div className="form-group contact-span-2">
+                <label>Subject *</label>
+                <input type="text" name="subject" value={formData.subject} onChange={handleInputChange} required />
+              </div>
+              <div className="form-group contact-span-2">
+                <label>Message *</label>
+                <textarea name="message" value={formData.message} onChange={handleInputChange} rows="5" required />
+              </div>
+            </div>
             <div className="contact-btn-wrap">
               <button type="submit" className="btn btn-primary contact-submit-btn" disabled={loading}>
                 {loading ? 'Sending...' : 'Send Message'}

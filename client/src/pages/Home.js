@@ -27,8 +27,8 @@ const categoryImages = {
   'flower-pot': '/images/img13.jpg',
   'hair-clip': '/images/img14.jpg',
   keychain: '/images/img15.jpg',
-  'fridge-magnet': '/images/img18.jpg',
-  bookmark: '/images/img10.jpg',
+  'fridge-magnet': '/images/img10.jpg',
+  bookmark: '/images/img18.jpg',
 };
 
 const fallbackProducts = [

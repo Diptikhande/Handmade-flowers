@@ -4,26 +4,47 @@ const path = require('path');
 
 const normalizeImageUrl = (raw) => {
   if (!raw) return raw;
-  if (/^https?:\/\//i.test(raw)) return raw;
+  
+  // If it's a Cloudinary URL, keep it as-is
+  if (/^https?:\/\/res\.cloudinary\.com/i.test(raw)) {
+    return raw;
+  }
+  
+  // If it's any other http(s) URL, convert to relative path
+  if (/^https?:\/\//i.test(raw)) {
+    // Extract path after /uploads/
+    const match = raw.match(/\/uploads\/(.*)/);
+    if (match) {
+      return `/uploads/${match[1]}`;
+    }
+    return raw;
+  }
+  
+  // Handle local paths
   const clean = String(raw).replace(/\\/g, '/');
   if (clean.startsWith('/uploads/')) return clean;
   if (clean.includes('/uploads/')) return clean.slice(clean.indexOf('/uploads/'));
-  return `/uploads/${path.basename(clean)}`;
+  
+  return `/uploads/${clean.split(/[/\\]/).pop()}`;
 };
 
 const getUploadedUrl = (file) => {
   if (!file) return null;
   
-  // Cloudinary upload - returns full URL
-  if (file.secure_url) return file.secure_url;
-  if (file.url) return file.url;
+  // Cloudinary upload - returns full URL (keep as-is)
+  if (file.secure_url) {
+    return file.secure_url;
+  }
+  if (file.url) {
+    return file.url;
+  }
   
-  // Local disk storage - use only filename, not full path
+  // Local disk storage - always return relative path
   if (file.filename) {
     return `/uploads/${file.filename}`;
   }
   
-  // Fallback: extract filename from path
+  // Fallback for path-based storage
   if (file.path) {
     return normalizeImageUrl(file.path);
   }

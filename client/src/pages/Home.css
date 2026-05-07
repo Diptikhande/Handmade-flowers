@@ -1,5 +1,5 @@
 .home {
-  padding-bottom: 60px;
+  padding-bottom: 0;
   background:
     radial-gradient(circle at 10% 10%, rgba(253, 236, 239, 0.9), transparent 40%),
     radial-gradient(circle at 90% 0%, rgba(247, 198, 207, 0.35), transparent 42%),
@@ -83,7 +83,7 @@
 }
 
 .section {
-  padding: 90px 0;
+  padding: 76px 0;
   position: relative;
 }
 
@@ -186,14 +186,14 @@
 }
 
 .why-us {
-  padding: 80px 0;
+  padding: 56px 0 64px;
 }
 
 .why-title {
   text-align: center;
   font-size: 2.2rem;
   color: #4a2c3a;
-  margin-bottom: 50px;
+  margin-bottom: 34px;
   position: relative;
 }
 

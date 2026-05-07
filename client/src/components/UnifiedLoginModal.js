@@ -198,50 +198,52 @@ const UnifiedLoginModal = ({ isOpen, onClose, onLoginSuccess, loginType = 'auto'
 
             {customerMode === 'register' && (
               <form onSubmit={handleRegister} autoComplete="off">
-                <div className="form-group">
-                  <label>Name</label>
-                  <input type="text" name="name" value={formData.name} onChange={handleInputChange} required autoComplete="off" />
-                </div>
-                <div className="form-group">
-                  <label>Email</label>
-                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} required autoComplete="off" />
-                </div>
-                <div className="form-group">
-                  <label>Phone</label>
-                  <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required autoComplete="off" />
-                </div>
-                <div className="form-group">
-                  <label>Address</label>
-                  <input type="text" name="address" value={formData.address} onChange={handleInputChange} required autoComplete="off" />
-                </div>
-                <div className="form-group">
-                  <label>City</label>
-                  <input type="text" name="city" value={formData.city} onChange={handleInputChange} required autoComplete="off" />
-                </div>
-                <div className="form-group">
-                  <label>State</label>
-                  <input type="text" name="state" value={formData.state} onChange={handleInputChange} required autoComplete="off" />
-                </div>
-                <div className="form-group">
-                  <label>Pincode</label>
-                  <input type="text" name="pincode" value={formData.pincode} onChange={handleInputChange} required autoComplete="off" />
-                </div>
-                <div className="form-group">
-                  <label>Password</label>
-                  <div className="password-input-group">
-                    <input type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleInputChange} required autoComplete="new-password" />
-                    <button type="button" className="password-toggle" onClick={() => setShowPassword((p) => !p)}>
-                      {showPassword ? <FiEyeOff /> : <FiEye />}
-                    </button>
+                <div className="login-modal-grid">
+                  <div className="form-group">
+                    <label>Name</label>
+                    <input type="text" name="name" value={formData.name} onChange={handleInputChange} required autoComplete="off" />
                   </div>
-                </div>
-                <div className="form-group">
-                  <label>Confirm Password</label>
-                  <div className="password-input-group">
-                    <input type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} required autoComplete="new-password" />
-                    <button type="button" className="password-toggle" onClick={() => setShowConfirmPassword((p) => !p)}>
-                      {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
-                    </button>
+                  <div className="form-group">
+                    <label>Phone</label>
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required autoComplete="off" />
+                  </div>
+                  <div className="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" value={formData.email} onChange={handleInputChange} required autoComplete="off" />
+                  </div>
+                  <div className="form-group">
+                    <label>Pincode</label>
+                    <input type="text" name="pincode" value={formData.pincode} onChange={handleInputChange} required autoComplete="off" />
+                  </div>
+                  <div className="form-group">
+                    <label>City</label>
+                    <input type="text" name="city" value={formData.city} onChange={handleInputChange} required autoComplete="off" />
+                  </div>
+                  <div className="form-group">
+                    <label>State</label>
+                    <input type="text" name="state" value={formData.state} onChange={handleInputChange} required autoComplete="off" />
+                  </div>
+                  <div className="form-group login-modal-span-2">
+                    <label>Address</label>
+                    <input type="text" name="address" value={formData.address} onChange={handleInputChange} required autoComplete="off" />
+                  </div>
+                  <div className="form-group">
+                    <label>Password</label>
+                    <div className="password-input-group">
+                      <input type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleInputChange} required autoComplete="new-password" />
+                      <button type="button" className="password-toggle" onClick={() => setShowPassword((p) => !p)}>
+                        {showPassword ? <FiEyeOff /> : <FiEye />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label>Confirm Password</label>
+                    <div className="password-input-group">
+                      <input type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} required autoComplete="new-password" />
+                      <button type="button" className="password-toggle" onClick={() => setShowConfirmPassword((p) => !p)}>
+                        {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <button type="submit" className="login-modal-submit" disabled={loading}>

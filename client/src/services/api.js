@@ -7,7 +7,8 @@ const resolveApiBaseUrl = () => {
     if (process.env.NODE_ENV === 'production') {
       return '/api';
     }
-    return 'http://localhost:5000/api';
+    // Use relative path in development to work with proxy
+    return '/api';
   }
 
   const trimmed = envUrl.replace(/\/$/, '');
@@ -22,6 +23,10 @@ const API_BASE_URL = resolveApiBaseUrl();
 
 const resolveBackendBaseUrl = () => {
   if (API_BASE_URL.endsWith('/api')) {
+    // If it's a relative path like '/api', return empty string to use relative URLs
+    if (API_BASE_URL === '/api') {
+      return '';
+    }
     return API_BASE_URL.slice(0, -4);
   }
   return API_BASE_URL;
@@ -37,18 +42,34 @@ const appendCacheKey = (url, cacheKey) => {
 
 export const resolveImageUrl = (imageUrl, cacheKey) => {
   if (!imageUrl) return '';
-  if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
+  
+  // If it's already a full Cloudinary URL, return it with cache key
+  if (/^https?:\/\/res\.cloudinary\.com/i.test(imageUrl)) {
+    return appendCacheKey(imageUrl, cacheKey);
+  }
+  
+  // If it's any other full HTTP(S) URL, extract the path or keep as-is
+  if (/^https?:\/\//i.test(imageUrl)) {
+    // Try to extract just the /uploads/ part
+    const match = imageUrl.match(/\/uploads\/.+/);
+    if (match) {
+      return appendCacheKey(match[0], cacheKey);
+    }
+    // If we can't extract, just return with cache key (might be Cloudinary or other)
+    return appendCacheKey(imageUrl, cacheKey);
+  }
 
+  // For relative paths, normalize to /uploads/filename format
   const normalizedPath = imageUrl.startsWith('/')
     ? imageUrl
     : `/uploads/${imageUrl.split(/[\\/]/).pop()}`;
 
-  return appendCacheKey(`${BACKEND_BASE_URL}${normalizedPath}`, cacheKey);
+  // Always use relative paths - the proxy will handle routing
+  return appendCacheKey(normalizedPath, cacheKey);
 };
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
 });
 
@@ -59,6 +80,18 @@ apiClient.interceptors.request.use((config) => {
   const token = adminToken || customerToken;
   
   if (token) config.headers.Authorization = `Bearer ${token}`;
+
+  // Let the browser/axios set the correct multipart boundary for FormData.
+  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+    if (config.headers?.delete) {
+      config.headers.delete('Content-Type');
+      config.headers.delete('content-type');
+    } else {
+      delete config.headers?.['Content-Type'];
+      delete config.headers?.['content-type'];
+    }
+  }
+
   return config;
 });
 

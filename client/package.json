@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Frontend for handmade flowers e-commerce website",
   "private": true,
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "axios": "^1.3.0",
     "react": "^18.2.0",

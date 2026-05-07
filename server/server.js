@@ -24,7 +24,7 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
-const defaultOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+const defaultOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001', 'http://127.0.0.1:3001'];
 const configuredOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || '')
   .split(',')
   .map((origin) => origin.trim())
@@ -43,7 +43,12 @@ const isAllowedDevOrigin = (origin) => {
 
 app.use(
   cors({
-    origin(origin, callback) {
+    origin: function(origin, callback) {
+      // Allow all origins in development
+      if (process.env.NODE_ENV === 'development') {
+        return callback(null, true);
+      }
+      // In production, use the configured origins
       if (!origin || allowedOrigins.includes(origin) || isAllowedDevOrigin(origin)) {
         return callback(null, true);
       }
