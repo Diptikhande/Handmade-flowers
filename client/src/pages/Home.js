@@ -19,7 +19,7 @@ const categories = [
   { key: 'hair-clip', name: 'Hair Clips', desc: 'Cute floral accessories.' },
   { key: 'keychain', name: 'Keychains', desc: 'Mini aesthetic floral charms.' },
   { key: 'fridge-magnet', name: 'Fridge Magnets', desc: 'Colorful flower magnets for your kitchen.' },
-  { key: 'wall-hanging', name: 'Wall Hangings', desc: 'Beautiful home decor pieces.' },
+  { key: 'bookmark', name: 'Bookmarks', desc: 'Elegant handmade reading markers.' },
 ];
 
 const categoryImages = {
@@ -28,7 +28,7 @@ const categoryImages = {
   'hair-clip': '/images/img14.jpg',
   keychain: '/images/img15.jpg',
   'fridge-magnet': '/images/img18.jpg',
-  'wall-hanging': '/images/img5.jpg',
+  bookmark: '/images/img10.jpg',
 };
 
 const fallbackProducts = [
@@ -161,47 +161,6 @@ const Home = () => {
               );
             })}
           </div>
-        </div>
-      </section>
-
-      <section className="section best-sellers" data-reveal>
-        <div className="container">
-          <div className="section-header">
-            <div>
-              <h2 className="section-title">Best Sellers</h2>
-              <p className="section-subtitle">Most loved handmade creations</p>
-            </div>
-
-            <Link to="/products" className="btn btn-secondary">View All</Link>
-          </div>
-
-          {loading ? (
-            <LoadingSpinner message="Loading..." />
-          ) : (
-            <div className="product-grid">
-              {displayProducts.map((product, index) => (
-                <div className="product-card" key={product._id || index}>
-                  <div className="product-img">
-                    <img src={product.image || product.images?.[0]} alt={product.name} />
-                  </div>
-
-                  <div className="product-info">
-                    <h3>{product.name}</h3>
-                    <p className="price">₹{product.price}</p>
-
-                    <div className="product-actions">
-                      <button className="btn btn-primary btn-small" onClick={() => handleBuyNow(product)}>
-                        View Product <FiArrowRight />
-                      </button>
-                      <button className="btn btn-outline btn-small" onClick={() => handleAddToCart(product)}>
-                        <FiShoppingCart /> Add to Cart
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </section>
     </div>

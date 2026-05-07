@@ -8,6 +8,7 @@ const {
   getOrderByTransactionId,
   approveOrder,
   rejectOrder,
+  updateOrderStatus,
   getOrderStats,
 } = require('../controllers/orderController');
 const { upload } = require('../config/cloudinary');
@@ -21,6 +22,7 @@ router.get('/status/:transactionId', getOrderByTransactionId);
 router.get('/', requireAdmin, getAllOrders);
 router.get('/stats/dashboard', requireAdmin, getOrderStats);
 router.get('/:id', requireAdmin, getOrderById);
+router.patch('/:id/status', requireAdmin, updateOrderStatus);
 router.patch('/:id/approve', requireAdmin, approveOrder);
 router.patch('/:id/reject', requireAdmin, rejectOrder);
 

@@ -1,6 +1,35 @@
 const Product = require('../models/Product');
 
-const getUploadedUrl = (file) => file?.path || file?.secure_url || file?.url || null;
+const path = require('path');
+
+const normalizeImageUrl = (raw) => {
+  if (!raw) return raw;
+  if (/^https?:\/\//i.test(raw)) return raw;
+  const clean = String(raw).replace(/\\/g, '/');
+  if (clean.startsWith('/uploads/')) return clean;
+  if (clean.includes('/uploads/')) return clean.slice(clean.indexOf('/uploads/'));
+  return `/uploads/${path.basename(clean)}`;
+};
+
+const getUploadedUrl = (file) => {
+  if (!file) return null;
+  
+  // Cloudinary upload - returns full URL
+  if (file.secure_url) return file.secure_url;
+  if (file.url) return file.url;
+  
+  // Local disk storage - use only filename, not full path
+  if (file.filename) {
+    return `/uploads/${file.filename}`;
+  }
+  
+  // Fallback: extract filename from path
+  if (file.path) {
+    return normalizeImageUrl(file.path);
+  }
+  
+  return null;
+};
 
 exports.getAllProducts = async (req, res, next) => {
   try {
@@ -9,7 +38,15 @@ exports.getAllProducts = async (req, res, next) => {
     
     try {
       const products = await Product.find(filter).sort({ createdAt: -1 });
-      return res.status(200).json({ success: true, count: products.length, data: products });
+      
+      // Normalize image URLs for existing products with full paths
+      const normalizedProducts = products.map((product) => {
+        const productObj = product.toObject();
+        productObj.imageUrl = normalizeImageUrl(productObj.imageUrl);
+        return productObj;
+      });
+      
+      return res.status(200).json({ success: true, count: normalizedProducts.length, data: normalizedProducts });
     } catch (dbError) {
       // Check if it's a connection error or another type of error
       if (dbError.name === 'MongooseError' || dbError.code === 'ENOTFOUND') {
@@ -31,7 +68,11 @@ exports.getProductById = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
-    res.status(200).json({ success: true, data: product });
+    // Normalize image URL for existing products with full paths
+    const productObj = product.toObject();
+    productObj.imageUrl = normalizeImageUrl(productObj.imageUrl);
+
+    res.status(200).json({ success: true, data: productObj });
   } catch (error) {
     next(error);
   }
@@ -109,7 +150,15 @@ exports.deleteProduct = async (req, res, next) => {
 exports.getProductsByCategory = async (req, res, next) => {
   try {
     const products = await Product.find({ category: req.params.category });
-    res.status(200).json({ success: true, count: products.length, data: products });
+    
+    // Normalize image URLs for existing products with full paths
+    const normalizedProducts = products.map((product) => {
+      const productObj = product.toObject();
+      productObj.imageUrl = normalizeImageUrl(productObj.imageUrl);
+      return productObj;
+    });
+    
+    res.status(200).json({ success: true, count: normalizedProducts.length, data: normalizedProducts });
   } catch (error) {
     next(error);
   }

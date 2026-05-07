@@ -20,6 +20,32 @@ const resolveApiBaseUrl = () => {
 
 const API_BASE_URL = resolveApiBaseUrl();
 
+const resolveBackendBaseUrl = () => {
+  if (API_BASE_URL.endsWith('/api')) {
+    return API_BASE_URL.slice(0, -4);
+  }
+  return API_BASE_URL;
+};
+
+export const BACKEND_BASE_URL = resolveBackendBaseUrl();
+
+const appendCacheKey = (url, cacheKey) => {
+  if (!cacheKey) return url;
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}v=${encodeURIComponent(cacheKey)}`;
+};
+
+export const resolveImageUrl = (imageUrl, cacheKey) => {
+  if (!imageUrl) return '';
+  if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
+
+  const normalizedPath = imageUrl.startsWith('/')
+    ? imageUrl
+    : `/uploads/${imageUrl.split(/[\\/]/).pop()}`;
+
+  return appendCacheKey(`${BACKEND_BASE_URL}${normalizedPath}`, cacheKey);
+};
+
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
@@ -64,17 +90,18 @@ export const productAPI = {
   getAllProducts: () => apiClient.get('/products'),
   getProductById: (id) => apiClient.get(`/products/${id}`),
   getProductsByCategory: (category) => apiClient.get(`/products/category/${category}`),
-  createProduct: (formData) => apiClient.post('/products', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
-  updateProduct: (id, formData) => apiClient.put(`/products/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  createProduct: (formData) => apiClient.post('/products', formData),
+  updateProduct: (id, formData) => apiClient.put(`/products/${id}`, formData),
   deleteProduct: (id) => apiClient.delete(`/products/${id}`),
 };
 
 export const orderAPI = {
-  createOrder: (formData) => apiClient.post('/orders', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  createOrder: (formData) => apiClient.post('/orders', formData),
   getAllOrders: () => apiClient.get('/orders'),
   getOrderById: (id) => apiClient.get(`/orders/${id}`),
   getOrderByTransactionId: (transactionId) => apiClient.get(`/orders/status/${transactionId}`),
   getOrderStats: () => apiClient.get('/orders/stats/dashboard'),
+  updateOrderStatus: (id, data) => apiClient.patch(`/orders/${id}/status`, data),
   approveOrder: (id) => apiClient.patch(`/orders/${id}/approve`),
   rejectOrder: (id, data) => apiClient.patch(`/orders/${id}/reject`, data),
 };
@@ -95,7 +122,20 @@ export const adminAPI = {
 
 export const customerAPI = {
   login: (data) => apiClient.post('/customers/login', data),
+  register: (data) => apiClient.post('/customers/register', data),
+  loginWithPassword: (data) => apiClient.post('/customers/login-password', data),
+  googleLogin: (data) => apiClient.post('/customers/google-login', data),
   getProfile: () => apiClient.get('/customers/profile'),
+  updateProfile: (data) => apiClient.put('/customers/profile', data),
+  getOrders: () => apiClient.get('/customers/orders'),
+};
+
+export const contactAPI = {
+  sendMessage: (data) => apiClient.post('/contacts', data),
+  getAllContacts: () => apiClient.get('/contacts'),
+  getContactById: (id) => apiClient.get(`/contacts/${id}`),
+  updateContact: (id, data) => apiClient.put(`/contacts/${id}`, data),
+  deleteContact: (id) => apiClient.delete(`/contacts/${id}`),
 };
 
 export const settingsAPI = {

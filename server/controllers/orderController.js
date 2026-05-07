@@ -1,5 +1,14 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const jwt = require('jsonwebtoken');
+
+const statusMessages = {
+  pending: 'Waiting for verification',
+  approved: 'Order confirmed',
+  'in-progress': 'Your order is being prepared',
+  delivered: 'Order delivered',
+  rejected: 'Payment not verified',
+};
 
 const getUploadedUrl = (file) => file?.path || file?.secure_url || file?.url || null;
 
@@ -20,7 +29,25 @@ exports.createOrder = async (req, res, next) => {
     const orderQuantity = Math.max(1, Number(quantity || 1));
     const amount = Number(product.price) * orderQuantity;
 
+    let customerId = null;
+    let customerEmail = null;
+    const auth = req.headers.authorization || '';
+    if (auth.startsWith('Bearer ')) {
+      try {
+        const token = auth.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'change-me-in-production');
+        if (decoded.role === 'customer') {
+          customerId = decoded.id || null;
+          customerEmail = decoded.email || null;
+        }
+      } catch (_err) {
+        // Continue without linked customer when token is missing/invalid.
+      }
+    }
+
     const order = await Order.create({
+      customerId,
+      customerEmail,
       productId,
       productName: product.name,
       customerName,
@@ -63,14 +90,37 @@ exports.getOrderById = async (req, res, next) => {
 
 exports.getOrderByTransactionId = async (req, res, next) => {
   try {
-    const order = await Order.findOne({ transactionId: req.params.transactionId });
+    const order = await Order.findOne({ transactionId: req.params.transactionId }).populate('productId');
     if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
 
-    let statusMessage = 'Waiting for verification';
-    if (order.status === 'approved') statusMessage = 'Order Confirmed';
-    if (order.status === 'rejected') statusMessage = 'Payment not verified';
+    const statusMessage = statusMessages[order.status] || statusMessages.pending;
 
     res.status(200).json({ success: true, data: { ...order.toObject(), statusMessage } });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateOrderStatus = async (req, res, next) => {
+  try {
+    const { status, reason } = req.body;
+    const validStatuses = ['pending', 'approved', 'rejected', 'in-progress', 'delivered'];
+
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: 'Invalid order status' });
+    }
+
+    const updateData = { status };
+    if (status === 'rejected') {
+      updateData.rejectionReason = reason || 'Order rejected by admin';
+    } else {
+      updateData.rejectionReason = null;
+    }
+
+    const order = await Order.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+
+    res.status(200).json({ success: true, message: 'Order status updated successfully', data: order });
   } catch (error) {
     next(error);
   }

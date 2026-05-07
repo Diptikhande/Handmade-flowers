@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { productAPI } from '../services/api';
+import { productAPI, resolveImageUrl } from '../services/api';
 import UnifiedLoginModal from '../components/UnifiedLoginModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import './ProductDetails.css';
@@ -21,6 +21,11 @@ const ProductDetails = () => {
   }, [id]);
 
   const handleBuyNow = () => {
+    if (localStorage.getItem('customerToken')) {
+      navigate('/checkout', { state: { product, quantity } });
+      return;
+    }
+
     setLoginModalOpen(true);
   };
 
@@ -48,7 +53,9 @@ const ProductDetails = () => {
       <div className="container">
         <button className="back-button" onClick={() => navigate(-1)}>Back</button>
         <div className="product-details-container fade-up">
-          <div className="product-details-image"><img src={product.imageUrl} alt={product.name} /></div>
+          <div className="product-details-image">
+            <img src={resolveImageUrl(product.imageUrl, product.updatedAt) || '/images/img1.jpg'} alt={product.name} />
+          </div>
           <div className="product-details-info">
             <h1>{product.name}</h1>
             <p className="text-muted">{product.category.replace('-', ' ')}</p>

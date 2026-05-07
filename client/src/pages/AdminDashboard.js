@@ -9,6 +9,12 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const formatRevenue = (value) => {
+    const normalized = Number(String(value ?? 0).replace(/[^0-9.-]/g, ''));
+    const safeValue = Number.isFinite(normalized) ? normalized : 0;
+    return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(safeValue);
+  };
+
   useEffect(() => {
     fetchDashboardStats();
   }, []);
@@ -40,7 +46,22 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard-page">
       <div className="container">
-        <h1>Admin Dashboard</h1>
+        <div className="dashboard-hero">
+          <div className="dashboard-hero-copy">
+            <p className="dashboard-eyebrow">Store operations</p>
+            <h1>Admin Dashboard</h1>
+            <p className="dashboard-subtitle">
+              A premium overview for products, orders, revenue, and custom requests.
+            </p>
+          </div>
+          <div className="dashboard-hero-panel">
+            <span className="dashboard-hero-label">Live summary</span>
+            <strong>{stats?.orders?.totalOrders || 0} orders</strong>
+            <p>
+              {stats?.orders?.pendingOrders || 0} pending, {stats?.orders?.approvedOrders || 0} approved
+            </p>
+          </div>
+        </div>
 
         {/* Stats Cards */}
         <div className="stats-grid">
@@ -92,7 +113,7 @@ const AdminDashboard = () => {
             <div className="stat-icon"><FiTrendingUp /></div>
             <div className="stat-content">
               <h3>Total Revenue</h3>
-              <p className="stat-value">₹{stats?.orders?.totalRevenue || 0}</p>
+              <p className="stat-value">₹{formatRevenue(stats?.orders?.totalRevenue)}</p>
             </div>
             <Link to="/admin/orders" className="stat-link">
               Details →
@@ -111,34 +132,36 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <section className="quick-actions">
-          <h2>Quick Actions</h2>
-          <div className="actions-grid">
-            <Link to="/admin/products" className="action-button">
-              <FiBox />
-              <span>Manage Products</span>
-            </Link>
-            <Link to="/admin/orders" className="action-button">
-              <FiShoppingCart />
-              <span>Verify Orders</span>
-            </Link>
-            <Link to="/admin/custom-orders" className="action-button">
-              <FiEdit3 />
-              <span>Custom Orders</span>
-            </Link>
-          </div>
-        </section>
+        <div className="dashboard-secondary-grid">
+          {/* Quick Actions */}
+          <section className="quick-actions">
+            <h2>Quick Actions</h2>
+            <div className="actions-grid">
+              <Link to="/admin/products" className="action-button">
+                <FiBox />
+                <span>Manage Products</span>
+              </Link>
+              <Link to="/admin/orders" className="action-button">
+                <FiShoppingCart />
+                <span>Verify Orders</span>
+              </Link>
+              <Link to="/admin/custom-orders" className="action-button">
+                <FiEdit3 />
+                <span>Custom Orders</span>
+              </Link>
+            </div>
+          </section>
 
-        {/* Info Box */}
-        <div className="info-box">
-          <h3>Welcome to Admin Panel</h3>
-          <ul>
-            <li>Add, edit, or delete products</li>
-            <li>Verify and approve customer orders</li>
-            <li>Manage custom order requests</li>
-            <li>View revenue and order statistics</li>
-          </ul>
+          {/* Info Box */}
+          <div className="info-box">
+            <h3>Welcome to Admin Panel</h3>
+            <ul>
+              <li>Add, edit, or delete products</li>
+              <li>Verify and approve customer orders</li>
+              <li>Manage custom order requests</li>
+              <li>View revenue and order statistics</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

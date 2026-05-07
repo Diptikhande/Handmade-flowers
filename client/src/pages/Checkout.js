@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
-import { orderAPI, settingsAPI } from '../services/api';
+import { orderAPI, resolveImageUrl, settingsAPI } from '../services/api';
 import './Checkout.css';
 
 const Checkout = () => {
@@ -50,7 +50,7 @@ const Checkout = () => {
       payload.append('paymentScreenshot', formData.paymentScreenshot);
       const response = await orderAPI.createOrder(payload);
       setMessage(`success:${response.data.message}`);
-      setTimeout(() => navigate('/order-status', { state: { transactionId: formData.transactionId } }), 1200);
+      setTimeout(() => navigate('/profile?tab=orders'), 1200);
     } catch (error) {
       setMessage(`error:${error.response?.data?.message || error.message}`);
     } finally {
@@ -69,7 +69,7 @@ const Checkout = () => {
         <h1>Secure Checkout</h1>
         <div className="checkout-container">
           <aside className="summary-card">
-            <div className="summary-item"><img src={product.imageUrl} alt={product.name} /><div><h3>{product.name}</h3><p className="text-muted">{product.category}</p></div></div>
+            <div className="summary-item"><img src={resolveImageUrl(product.imageUrl, product.updatedAt)} alt={product.name} /><div><h3>{product.name}</h3><p className="text-muted">{product.category}</p></div></div>
             <div className="summary-divider" />
             <p>Unit Price <strong>Rs {product.price}</strong></p>
             <p>Quantity <strong>{formData.quantity}</strong></p>

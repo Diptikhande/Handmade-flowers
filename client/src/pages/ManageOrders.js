@@ -8,6 +8,7 @@ const ManageOrders = () => {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     fetchOrders();
@@ -56,14 +57,58 @@ const ManageOrders = () => {
     }
   };
 
+  const handleUpdateStatus = async (id, newStatus) => {
+    if (!newStatus) return;
+    
+    try {
+      if (newStatus === 'approved') {
+        await orderAPI.approveOrder(id);
+      } else if (newStatus === 'rejected') {
+        const reason = prompt('Please provide a reason for rejection:');
+        if (!reason) return;
+        await orderAPI.rejectOrder(id, { reason });
+      } else if (newStatus === 'in-progress' || newStatus === 'delivered') {
+        // For these statuses, we can update directly via API
+        await orderAPI.updateOrderStatus(id, { status: newStatus });
+      }
+      fetchOrders();
+      if (selectedOrder?._id === id) {
+        setSelectedOrder(null);
+      }
+    } catch (error) {
+      console.error('Failed to update order status:', error);
+      alert('Error updating order status');
+    }
+  };
+
+  const handleRemoveOrder = async (id) => {
+    const reason = prompt('Please provide a reason for removing this order:');
+    if (!reason) return;
+
+    if (window.confirm('Remove this order? This will notify the customer.')) {
+      try {
+        await orderAPI.rejectOrder(id, { reason });
+        fetchOrders();
+        setSelectedOrder(null);
+      } catch (error) {
+        console.error('Failed to remove order:', error);
+        alert('Error removing order');
+      }
+    }
+  };
+
   const getStatusBadge = (status) => {
     const badges = {
       pending: { class: 'pending', text: '⏳ Pending' },
       approved: { class: 'approved', text: '✓ Approved' },
       rejected: { class: 'rejected', text: '✕ Rejected' },
+      'in-progress': { class: 'in-progress', text: '⚙ In Progress' },
+      delivered: { class: 'delivered', text: '📦 Delivered' },
     };
     return badges[status] || badges.pending;
   };
+
+  const filteredOrders = statusFilter === 'all' ? orders : orders.filter(o => o.status === statusFilter);
 
   return (
     <div className="manage-orders-page">
@@ -73,51 +118,21 @@ const ManageOrders = () => {
         {loading ? (
           <LoadingSpinner />
         ) : (
-          <div className="orders-container">
-            {/* Orders List */}
-            <div className="orders-list">
-              <table className="orders-table">
-                <thead>
-                  <tr>
-                    <th>Transaction ID</th>
-                    <th>Customer</th>
-                    <th>Product</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((order) => (
-                    <tr key={order._id}>
-                      <td>
-                        <code>{order.transactionId}</code>
-                      </td>
-                      <td>{order.customerName}</td>
-                      <td>{order.productName}</td>
-                      <td>₹{order.amount}</td>
-                      <td>
-                        <span className={`badge ${getStatusBadge(order.status).class}`}>
-                          {getStatusBadge(order.status).text}
-                        </span>
-                      </td>
-                      <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                      <td>
-                        <button
-                          className="btn btn-secondary btn-small"
-                          onClick={() => setSelectedOrder(order)}
-                        >
-                          View
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="orders-wrapper">
+            {/* Status Filter */}
+            <div className="filter-bar">
+              <label>Filter by Status:</label>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                <option value="all">All Orders</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="in-progress">In Progress</option>
+                <option value="delivered">Delivered</option>
+              </select>
             </div>
 
-            {/* Order Details */}
+            {/* Order Details Panel - Shows at TOP when selected */}
             {selectedOrder && (
               <div className="order-details-panel">
                 <div className="panel-header">
@@ -156,6 +171,10 @@ const ManageOrders = () => {
                     <span className="value">{selectedOrder.productName}</span>
                   </div>
                   <div className="info-row">
+                    <span className="label">Quantity:</span>
+                    <span className="value">{selectedOrder.quantity}</span>
+                  </div>
+                  <div className="info-row">
                     <span className="label">Amount:</span>
                     <span className="value">₹{selectedOrder.amount}</span>
                   </div>
@@ -165,22 +184,34 @@ const ManageOrders = () => {
                       {getStatusBadge(selectedOrder.status).text}
                     </span>
                   </div>
-                </div>
-
-                {/* Payment Screenshot */}
-                <div className="payment-screenshot">
-                  <h3>Payment Screenshot</h3>
-                  <img src={selectedOrder.paymentScreenshot} alt="Payment Screenshot" />
+                  {selectedOrder.rejectionReason && (
+                    <div className="info-row">
+                      <span className="label">Cancellation Reason:</span>
+                      <span className="value">{selectedOrder.rejectionReason}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Actions */}
                 {selectedOrder.status === 'pending' && (
                   <div className="action-section">
+                    <div className="status-update">
+                      <label>Update Status:</label>
+                      <select 
+                        onChange={(e) => handleUpdateStatus(selectedOrder._id, e.target.value)}
+                        defaultValue=""
+                      >
+                        <option value="">-- Select Action --</option>
+                        <option value="approved">Approve Order</option>
+                        <option value="rejected">Reject Order</option>
+                      </select>
+                    </div>
+
                     <button
-                      className="btn btn-success"
-                      onClick={() => handleApprove(selectedOrder._id)}
+                      className="btn btn-danger"
+                      onClick={() => handleRemoveOrder(selectedOrder._id)}
                     >
-                      ✓ Approve Order
+                      🗑 Remove Order
                     </button>
 
                     <div className="reject-section">
@@ -194,7 +225,7 @@ const ManageOrders = () => {
                         className="btn btn-danger"
                         onClick={() => handleReject(selectedOrder._id)}
                       >
-                        ✕ Reject Order
+                        ✕ Reject Order (with reason above)
                       </button>
                     </div>
                   </div>
@@ -208,6 +239,75 @@ const ManageOrders = () => {
                 )}
               </div>
             )}
+
+            {/* Orders Table - Full Width */}
+            <div className="orders-list">
+              <table className="orders-table">
+                <thead>
+                  <tr>
+                    <th>Transaction ID</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Amount</th>
+                    <th>Qty</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredOrders.length === 0 ? (
+                    <tr>
+                      <td colSpan="8" className="empty-message">No orders found</td>
+                    </tr>
+                  ) : (
+                    filteredOrders.map((order) => (
+                      <tr key={order._id}>
+                        <td>
+                          <code>{order.transactionId?.slice(0, 12)}...</code>
+                        </td>
+                        <td>{order.customerName}</td>
+                        <td>{order.productName}</td>
+                        <td>₹{order.amount}</td>
+                        <td>{order.quantity}</td>
+                        <td>
+                          <select 
+                            value={order.status}
+                            onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
+                            className={`status-select status-${order.status}`}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <option value="">-- Select --</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="rejected">Rejected</option>
+                          </select>
+                        </td>
+                        <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                        <td>
+                          <div className="action-buttons">
+                            <button
+                              className="btn btn-secondary btn-small"
+                              onClick={() => setSelectedOrder(order)}
+                            >
+                              View
+                            </button>
+                            <button
+                              className="btn btn-danger btn-small"
+                              onClick={() => handleRemoveOrder(order._id)}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

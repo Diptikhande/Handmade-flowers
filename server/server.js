@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const path = require('path');
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ const orderRoutes = require('./routes/orderRoutes');
 const customOrderRoutes = require('./routes/customOrderRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const customerRoutes = require('./routes/customerRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 const siteSettingsRoutes = require('./routes/siteSettingsRoutes');
 const authRoutes = require('./routes/authRoutes');
 
@@ -51,7 +53,15 @@ app.use(
   })
 );
 
-app.use('/uploads', express.static('uploads'));
+// Add explicit CORS headers for static file serving
+app.use('/uploads', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
@@ -69,6 +79,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/custom-orders', customOrderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/customers', customerRoutes);
+app.use('/api/contacts', contactRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/settings', siteSettingsRoutes);
 

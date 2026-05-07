@@ -53,7 +53,9 @@ const AdminLogin = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="form">
+          <form onSubmit={handleSubmit} className="form" autoComplete="off">
+            <input type="text" name="fake-username" autoComplete="username" tabIndex="-1" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
+            <input type="password" name="fake-password" autoComplete="new-password" tabIndex="-1" aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
 
             {/* USERNAME */}
             <div className="form-group">
@@ -65,6 +67,7 @@ const AdminLogin = () => {
                 onChange={handleInputChange}
                 required
                 disabled={loading}
+                autoComplete="off"
               />
             </div>
 
@@ -80,6 +83,7 @@ const AdminLogin = () => {
                   onChange={handleInputChange}
                   required
                   disabled={loading}
+                  autoComplete="new-password"
                 />
 
                 <button

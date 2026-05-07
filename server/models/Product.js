@@ -21,7 +21,7 @@ const productSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ['keychain', 'fridge-magnet', 'hair-clip', 'flower-pot', 'bouquet'],
+      enum: ['keychain', 'fridge-magnet', 'hair-clip', 'flower-pot', 'bouquet', 'bookmark'],
       required: [true, 'Please select a product category'],
     },
     imageUrl: {

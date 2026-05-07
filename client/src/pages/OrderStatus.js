@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { orderAPI } from '../services/api';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { orderAPI, resolveImageUrl } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import './OrderStatus.css';
 
 const OrderStatus = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const transactionId = location.state?.transactionId || '';
+  const [searchParams] = useSearchParams();
+  const transactionId = location.state?.transactionId || searchParams.get('transactionId') || '';
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -43,14 +44,49 @@ const OrderStatus = () => {
 
   const getStatusColor = (status) => {
     if (status === 'approved') return 'approved';
+    if (status === 'in-progress') return 'in-progress';
+    if (status === 'delivered') return 'delivered';
     if (status === 'rejected') return 'rejected';
     return 'pending';
   };
 
   const getStatusIcon = (status) => {
     if (status === 'approved') return '✓';
+    if (status === 'in-progress') return '⚙';
+    if (status === 'delivered') return '📦';
     if (status === 'rejected') return '✕';
     return '⏳';
+  };
+
+  const getStatusLabel = (status) => {
+    const labels = {
+      pending: 'Pending verification',
+      approved: 'Approved',
+      'in-progress': 'In progress',
+      delivered: 'Delivered',
+      rejected: 'Rejected',
+    };
+    return labels[status] || labels.pending;
+  };
+
+  const statusSteps = ['pending', 'approved', 'in-progress', 'delivered'];
+  const currentStepIndex = statusSteps.indexOf(order?.status);
+
+  const isStepCompleted = (step, index) => {
+    if (!order) return false;
+    if (order.status === 'rejected') {
+      return step === 'pending';
+    }
+    if (currentStepIndex === -1) return step === 'pending';
+    return index <= currentStepIndex;
+  };
+
+  const isCurrentStep = (step, index) => {
+    if (!order) return false;
+    if (order.status === 'rejected') {
+      return step === 'pending';
+    }
+    return index === currentStepIndex;
   };
 
   return (
@@ -83,7 +119,17 @@ const OrderStatus = () => {
             {/* Status Badge */}
             <div className={`status-badge ${getStatusColor(order.status)}`}>
               <span className="status-icon">{getStatusIcon(order.status)}</span>
-              <span className="status-text">{order.statusMessage}</span>
+              <span className="status-text">{order.statusMessage || getStatusLabel(order.status)}</span>
+            </div>
+
+            <div className="product-summary">
+              <div className="product-summary-image">
+                <img src={resolveImageUrl(order.productId?.imageUrl, order.productId?.updatedAt) || '/images/img1.jpg'} alt={order.productId?.name || order.productName} />
+              </div>
+              <div className="product-summary-text">
+                <h2>{order.productId?.name || order.productName}</h2>
+                <p>₹{order.amount} • Qty {order.quantity}</p>
+              </div>
             </div>
 
             {/* Order Details */}
@@ -137,17 +183,21 @@ const OrderStatus = () => {
             <div className="status-timeline">
               <h3>Order Timeline</h3>
               <div className="timeline">
-                <div className={`timeline-item ${['pending', 'approved', 'rejected'].includes(order.status) ? 'completed' : ''}`}>
+                <div className={`timeline-item ${isStepCompleted('pending', 0) ? 'completed' : ''} ${isCurrentStep('pending', 0) ? 'current' : ''}`}>
                   <span className="timeline-dot"></span>
-                  <span className="timeline-label">Order Submitted</span>
+                  <span className="timeline-label">Submitted</span>
                 </div>
-                <div className={`timeline-item ${order.status === 'approved' || order.status === 'rejected' ? 'completed' : ''}`}>
+                <div className={`timeline-item ${isStepCompleted('approved', 1) ? 'completed' : ''} ${isCurrentStep('approved', 1) ? 'current' : ''}`}>
                   <span className="timeline-dot"></span>
-                  <span className="timeline-label">Payment Verification</span>
+                  <span className="timeline-label">Approved</span>
                 </div>
-                <div className={`timeline-item ${order.status === 'approved' ? 'completed' : ''}`}>
+                <div className={`timeline-item ${isStepCompleted('in-progress', 2) ? 'completed' : ''} ${isCurrentStep('in-progress', 2) ? 'current' : ''}`}>
                   <span className="timeline-dot"></span>
-                  <span className="timeline-label">Order Confirmed</span>
+                  <span className="timeline-label">In Progress</span>
+                </div>
+                <div className={`timeline-item ${isStepCompleted('delivered', 3) ? 'completed' : ''} ${isCurrentStep('delivered', 3) ? 'current' : ''}`}>
+                  <span className="timeline-dot"></span>
+                  <span className="timeline-label">Delivered</span>
                 </div>
               </div>
             </div>
@@ -162,6 +212,16 @@ const OrderStatus = () => {
               {order.status === 'approved' && (
                 <p className="success-message">
                   ✓ Your order has been confirmed! We'll contact you with delivery details.
+                </p>
+              )}
+              {order.status === 'in-progress' && (
+                <p className="info-message">
+                  ⚙ Your order is being prepared. Please check back for the next update.
+                </p>
+              )}
+              {order.status === 'delivered' && (
+                <p className="success-message">
+                  📦 Your order has been delivered. Thank you for shopping with us.
                 </p>
               )}
               {order.status === 'rejected' && (

@@ -2,6 +2,17 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema(
   {
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Customer',
+      default: null,
+    },
+    customerEmail: {
+      type: String,
+      default: null,
+      lowercase: true,
+      trim: true,
+    },
     productId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Product',
@@ -46,7 +57,7 @@ const orderSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'approved', 'rejected'],
+      enum: ['pending', 'approved', 'rejected', 'in-progress', 'delivered'],
       default: 'pending',
     },
     rejectionReason: {

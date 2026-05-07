@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { productAPI } from '../services/api';
+import { productAPI, resolveImageUrl } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import './ManageProducts.css';
 
@@ -12,6 +12,7 @@ const initialForm = {
   stock: 100,
   image: null,
   existingImageUrl: null,
+  existingImageUpdatedAt: null,
 };
 
 const ManageProducts = () => {
@@ -88,9 +89,11 @@ const ManageProducts = () => {
       stock: product.stock || 0,
       image: null,
       existingImageUrl: product.imageUrl,
+      existingImageUpdatedAt: product.updatedAt,
     });
     setEditingId(product._id);
     setShowForm(true);
+    if (fileInputRef.current) fileInputRef.current.value = '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -126,16 +129,31 @@ const ManageProducts = () => {
                 <div className="form-group">
                   <label>Category *</label>
                   <select name="category" value={formData.category} onChange={handleInputChange} required>
-                    <option value="">Select Category</option><option value="keychain">Keychain</option><option value="fridge-magnet">Fridge Magnet</option><option value="hair-clip">Hair Clip</option><option value="flower-pot">Flower Pot</option><option value="bouquet">Bouquet</option>
+                    <option value="">Select Category</option>
+                    <option value="keychain">Keychain</option>
+                    <option value="fridge-magnet">Fridge Magnet</option>
+                    <option value="hair-clip">Hair Clip</option>
+                    <option value="flower-pot">Flower Pot</option>
+                    <option value="bouquet">Bouquet</option>
+                    <option value="bookmark">Bookmark</option>
                   </select>
                 </div>
                 <div className="form-group"><label>Stock *</label><input type="number" name="stock" value={formData.stock} onChange={handleInputChange} min="0" required /></div>
               </div>
               <div className="form-group">
                 <label>Product Image {!editingId && '*'}</label>
-                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} required={!editingId} />
+                <input key={editingId || 'new'} ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} required={!editingId} />
                 {(formData.image || formData.existingImageUrl) && (
-                  <img src={formData.image ? URL.createObjectURL(formData.image) : formData.existingImageUrl} alt="preview" style={{ width: 120, height: 120, objectFit: 'cover', marginTop: 8, borderRadius: 8 }} />
+                  <div className="image-preview-container">
+                    <img 
+                      src={formData.image ? URL.createObjectURL(formData.image) : resolveImageUrl(formData.existingImageUrl, formData.existingImageUpdatedAt)}
+                      alt="preview" 
+                      style={{ width: '100%', maxWidth: 200, height: 'auto', maxHeight: 200, objectFit: 'cover', marginTop: 12, borderRadius: 8, border: '1px solid #ddd' }}
+                      onError={(e) => {
+                        e.target.alt = 'Failed to load image';
+                      }}
+                    />
+                  </div>
                 )}
               </div>
               <div className="form-group"><label>Short Description</label><input type="text" name="shortDescription" value={formData.shortDescription} onChange={handleInputChange} maxLength="200" /></div>
@@ -153,7 +171,23 @@ const ManageProducts = () => {
             <div className="products-grid">
               {products.map((product) => (
                 <div key={product._id} className="product-card">
-                  <div className="product-image-wrapper"><img src={product.imageUrl} alt={product.name} className="product-image" /></div>
+                  <div className="product-image-wrapper">
+                    {product.imageUrl ? (
+                      <img 
+                        src={resolveImageUrl(product.imageUrl, product.updatedAt)}
+                        alt={product.name} 
+                        className="product-image"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextElementSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className="image-placeholder" style={{ display: product.imageUrl ? 'none' : 'flex' }}>
+                      <span>📷</span>
+                      <p>No Image</p>
+                    </div>
+                  </div>
                   <div className="product-info">
                     <h3>{product.name}</h3>
                     <p className="description">{product.shortDescription}</p>

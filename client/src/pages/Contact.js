@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { FiMapPin, FiPhone, FiMail } from 'react-icons/fi';
-import { settingsAPI } from '../services/api';
+import { settingsAPI, contactAPI } from '../services/api';
 import './Contact.css';
 
 const Contact = () => {
   const [settings, setSettings] = useState(null);
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -25,11 +27,22 @@ const Contact = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    setTimeout(() => setSubmitted(false), 5000);
+    setLoading(true);
+    setError('');
+
+    try {
+      await contactAPI.sendMessage(formData);
+      setSubmitted(true);
+      setFormData({ name: '', email: '', subject: '', message: '' });
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to send message. Please try again.');
+      console.error('Failed to send contact message:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const contact = settings?.contact;
@@ -63,13 +76,16 @@ const Contact = () => {
           </aside>
 
           <form onSubmit={handleSubmit} className="contact-form">
-            {submitted && <div className="alert alert-success">Thank you. We have received your message.</div>}
+            {submitted && <div className="alert alert-success">Thank you. We have received your message and will get back to you soon!</div>}
+            {error && <div className="alert alert-error">{error}</div>}
             <div className="form-group"><label>Name *</label><input type="text" name="name" value={formData.name} onChange={handleInputChange} required /></div>
             <div className="form-group"><label>Email *</label><input type="email" name="email" value={formData.email} onChange={handleInputChange} required /></div>
             <div className="form-group"><label>Subject *</label><input type="text" name="subject" value={formData.subject} onChange={handleInputChange} required /></div>
             <div className="form-group"><label>Message *</label><textarea name="message" value={formData.message} onChange={handleInputChange} rows="6" required /></div>
             <div className="contact-btn-wrap">
-              <button type="submit" className="btn btn-primary contact-submit-btn">Send Message</button>
+              <button type="submit" className="btn btn-primary contact-submit-btn" disabled={loading}>
+                {loading ? 'Sending...' : 'Send Message'}
+              </button>
             </div>
           </form>
         </div>

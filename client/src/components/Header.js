@@ -41,9 +41,14 @@ const Header = () => {
           </NavLink>
 
           {isCustomer ? (
-            <button className="btn btn-secondary btn-small" onClick={handleLogout}>
-              <FiLogOut /> Logout
-            </button>
+            <>
+              <NavLink to="/profile" onClick={closeMenu} className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+                Profile
+              </NavLink>
+              <button className="btn btn-secondary btn-small" onClick={handleLogout}>
+                <FiLogOut /> Logout
+              </button>
+            </>
           ) : (
             <Link to="/admin/login" onClick={closeMenu} className="btn btn-outline btn-small">
               Admin

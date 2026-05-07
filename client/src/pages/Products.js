@@ -23,7 +23,7 @@ const Products = () => {
     { value: 'hair-clip', label: 'Hair Clips' },
     { value: 'flower-pot', label: 'Flower Pots' },
     { value: 'bouquet', label: 'Bouquets' },
-    { value: 'bookmark', label: 'Bookmark' },
+    { value: 'bookmark', label: 'Bookmarks' },
   ];
 
   useEffect(() => {
@@ -60,12 +60,27 @@ const Products = () => {
   };
 
   const handleAddToCart = (product) => {
+    const isLoggedIn = !!localStorage.getItem('customerToken');
+    if (isLoggedIn) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.push(product);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert(`${product.name} added to cart!`);
+      return;
+    }
+
     setSelectedProduct(product);
     setLoginAction('addToCart');
     setLoginModalOpen(true);
   };
 
   const handleBuyNow = (product) => {
+    const isLoggedIn = !!localStorage.getItem('customerToken');
+    if (isLoggedIn) {
+      navigate(`/product/${product._id}`);
+      return;
+    }
+
     setSelectedProduct(product);
     setLoginAction('buyNow');
     setLoginModalOpen(true);
